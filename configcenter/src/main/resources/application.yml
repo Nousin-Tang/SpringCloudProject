@@ -1,0 +1,26 @@
+# 端口号
+server:
+  port: 9001
+
+spring:
+  application:
+    name: config-center # 应用名称
+  profiles:
+    active: native # 本地配置文件需要添加此属性
+  # Cloud配置
+  cloud:
+    # Nacos
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+    # Config
+    config:
+      server:
+        # git:
+        #   uri:
+        #   search-paths: /springcloud-config/config-repo
+        #   username:
+        #   password:
+        #   clone-on-start: true #开启启动时直接从git获取配置
+        native:
+          search-locations: file:E:/project/NewRetailing_file/config/
