@@ -1,0 +1,14 @@
+
+# 端口号
+server:
+  port: 9001
+
+spring:
+  application:
+    name: account-server # 应用名称
+  # Cloud配置
+  cloud:
+    # Nacos
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848

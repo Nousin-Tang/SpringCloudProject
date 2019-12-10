@@ -16,3 +16,6 @@ Spring Cloud Content
 ├── order-service --订单服务提供商
 
 ```
+
+##参照
+生成项目：https://start.spring.io/#!type=maven-project&language=java&platformVersion=2.2.2.RELEASE&packaging=jar&jvmVersion=1.8&groupId=com.nousin.springcloud.server&artifactId=account&name=account&description=Server%20Provider%20project%20for%20Spring%20Cloud%20based%20on%20Spring%20Boot&packageName=com.nousin.springcloud.server.account&dependencies=actuator,lombok,web,cloud-ribbon,cloud-hystrix,cloud-feign

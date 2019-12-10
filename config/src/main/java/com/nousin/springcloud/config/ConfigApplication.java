@@ -1,15 +1,17 @@
-package com.nousin.springcloud.server.order;
+package com.nousin.springcloud.config;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.config.server.EnableConfigServer;
 
 @SpringBootApplication(scanBasePackages = "com.nousin.springcloud")
+@EnableConfigServer
 @EnableDiscoveryClient
-public class OrderApplication {
+public class ConfigApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(OrderApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(ConfigApplication.class, args);
+	}
 
 }

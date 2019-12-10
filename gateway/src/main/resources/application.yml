@@ -6,6 +6,8 @@ service-url:
 
 service_name:
   order: order-service
+  storage: storage-service
+  account: acount-service
 
 # Spring
 spring:
@@ -34,7 +36,16 @@ spring:
             - Path=/order/** # 表示path地址，根据url，以order开头的会被转发到order-service服务上，需要注意的是后面/**和/*的区别
           #filters:
             #- StripPrefix=1 # 注意：Gateway默认转发是全路径的，设置StripPrefix=1表示从二级url路径转发，本路由中加入
-
+        # storage
+        - id: ${service_name.storage}_route_id
+          uri: lb://${service_name.storage}
+          predicates:
+            - Path=/storage/**
+        # account
+        - id: ${service_name.account}_route_id
+          uri: lb://${service_name.account}
+          predicates:
+            - Path=/account/**
 
 # logging
 logging:
