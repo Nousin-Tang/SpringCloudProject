@@ -1,0 +1,16 @@
+
+server:
+  port: 9102
+
+# Spring
+spring:
+  # 应用名称
+  application:
+    name: storage-service
+  # Spring Cloud 配置
+  cloud:
+    # Nacos
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+

@@ -16,16 +16,8 @@ spring:
     config:
       server:
         git:
-          uri:
-          search-paths: /springcloud-config/config-repo
+          uri: https://github.com/Nousin-Tang/SpringCloudProject.git
+          search-paths: configfile # 如果项目中没有二级文件夹,则将引入全部配置文件,有文件夹则需添加文件夹路径，多个以","分开
           username:
           password:
-          clone-on-start: true #开启启动时直接从git获取配置
         # native.search-locations: file:/usr/local/config/
-
-com:
-  alibaba:
-    nacos:
-      config:
-        log:
-          level: warn
