@@ -29,7 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Order(2)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -59,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      * @param auth 认证管理
      * @throws Exception 用户认证异常信息
      */
-    @Autowired
+    @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
     }
@@ -85,10 +85,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .and()
 //                .csrf().disable();
 
-        http.requestMatchers().antMatchers("/oauth/**")
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
+                .and()
+                .requestMatchers()
+                .antMatchers("/oauth/**")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/oauth/**").authenticated()
+                .antMatchers("/api/**").authenticated()
                 .and()
                 .csrf().disable();
     }

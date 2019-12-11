@@ -1,6 +1,7 @@
 package com.nousin.springcloud.server.order.framework.security.config;
 
 import com.nousin.springcloud.server.order.framework.common.dto.MyUserDetails;
+import com.nousin.springcloud.server.order.framework.security.converter.MyJwtAccessTokenConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,9 +16,12 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -26,10 +30,12 @@ import java.util.HashMap;
  * @author tangwc
  * @since 2019/12/10
  */
-@EnableAuthorizationServer
 @Configuration
+@EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
+    @Autowired
+    private MyJwtAccessTokenConverter myJwtAccessTokenConverter;
     private AuthenticationManager authenticationManager;
 //    private PasswordEncoder passwordEncoder;
 //    private DataSource dataSource;
@@ -58,11 +64,17 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
+        //      将增强的token设置到增强链中
+        TokenEnhancerChain enhancerChain = new TokenEnhancerChain();
+        enhancerChain.setTokenEnhancers(Arrays.asList(myJwtAccessTokenConverter, jwtAccessTokenConverter()));
+
+
         endpoints
                 // .pathMapping("/oauth/token","/login")// 令牌端点 路由 映射到自定义 /login 路由
                 .tokenStore(tokenStore())
                 .accessTokenConverter(jwtAccessTokenConverter())
-                .authenticationManager(authenticationManager);
+                .authenticationManager(authenticationManager)
+                .tokenEnhancer(enhancerChain);
         endpoints.tokenServices(defaultTokenServices());
     }
 
@@ -113,29 +125,21 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
 //        JwtAccessTokenConverterConfig config = new JwtAccessTokenConverterConfig();
-        JwtAccessTokenConverter config = new JwtAccessTokenConverter();
+        MyJwtAccessTokenConverter config = new MyJwtAccessTokenConverter();
 //        config.setKeyPair(RSAUtil.GetKeyPair());
         config.setSigningKey("111111");// 使用"111111"对数据进行加密
         return config;
     }
-
-    static class JwtAccessTokenConverterConfig extends JwtAccessTokenConverter {
-        @Override
-        public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
-            if (accessToken instanceof DefaultOAuth2AccessToken) {
-                //((DefaultOAuth2AccessToken) accessToken).setRefreshToken();
-                Object principal = authentication.getPrincipal();
-                if (principal instanceof MyUserDetails) {
-                    MyUserDetails myUserDetails = (MyUserDetails) principal;
-                    HashMap<String, Object> map = new HashMap<>();
-                    map.put("user_id", myUserDetails.getUser().getId());
-                    map.put("user_name", myUserDetails.getUser().getUsername());
-                    ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(map);
-                }
-            }
-            return super.enhance(accessToken, authentication);
-        }
+    @Bean
+    public JwtAccessTokenConverter getJwtAccessTokenConverter() {
+//        JwtAccessTokenConverterConfig config = new JwtAccessTokenConverterConfig();
+//        MyJwtAccessTokenConverter config = new MyJwtAccessTokenConverter();
+//        config.setKeyPair(RSAUtil.GetKeyPair());
+        myJwtAccessTokenConverter.setSigningKey("111111");// 使用"111111"对数据进行加密
+        return myJwtAccessTokenConverter;
     }
+
+
     /**
      * <p>注意，自定义TokenServices的时候，需要设置@Primary，否则报错，</p>
      * @return
