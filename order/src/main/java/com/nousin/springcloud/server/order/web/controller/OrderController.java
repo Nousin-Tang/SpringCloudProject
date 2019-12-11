@@ -1,13 +1,13 @@
-package com.nousin.springcloud.server.order.controller;
+package com.nousin.springcloud.server.order.web.controller;
 
+import com.nousin.springcloud.server.order.framework.common.dto.ResultDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,12 +18,23 @@ import java.util.Map;
  * @since 2019/12/8
  */
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/api")
 //@RefreshScope // 配置文件中配置了 management.endpoints.web.exposure.include=refresh 时，
 // 执行 curl -X POST http://localhost:8001/bus/refresh 请求时就会刷新 ${hello.word} 的值
 public class OrderController {
     @Value("${hello.word:hello}")
     private String word;
+
+    @GetMapping("/member")
+    public Principal user(Principal member) {
+        return member;
+    }
+
+    @GetMapping("hello")
+    @PreAuthorize("hasAnyAuthority('hello')")
+    public String hello(){
+        return "hello";
+    }
 
     /**
      * TODO
