@@ -1,0 +1,24 @@
+
+# Spring
+spring:
+  # Spring Cloud 配置
+  cloud:
+    # Nacos
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+    # 从配置服务器获取配置
+    # config:
+    #   discovery:
+    #     enabled: true
+    #     serviceId: config-server # 指定配置中心的service-id，便于扩展为高可用配置集群
+    #   name: auth #获取配置文件的名称
+    #   profile: dev # 获取配置的策略。
+    #   label:  #获取配置文件的分支，默认是master。如果是是本地获取的话，则无用。
+
+# 防止一直输出 [.naming.updater] com.alibaba.nacos.client.naming : current ips:(1) service: DEFAULT_GROUP@@gateway ->
+#com:
+#  alibaba:
+#    nacos:
+#      config.log.level: warn
+#      naming.log.level: warn

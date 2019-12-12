@@ -1,9 +1,7 @@
 package com.nousin.springcloud.server.order.web.controller;
 
 import com.nousin.springcloud.server.order.framework.common.dto.ResultDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
