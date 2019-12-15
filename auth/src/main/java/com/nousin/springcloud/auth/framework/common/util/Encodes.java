@@ -1,7 +1,4 @@
-/**
- * Copyright (c) 2005-2012 springside.org.cn
- */
-package com.nousin.springcloud.auth.framework.security.util;
+package com.nousin.springcloud.auth.framework.common.util;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;

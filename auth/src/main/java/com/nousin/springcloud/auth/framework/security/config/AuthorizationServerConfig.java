@@ -1,30 +1,27 @@
 package com.nousin.springcloud.auth.framework.security.config;
 
-import com.nousin.springcloud.auth.framework.common.dto.MyUserDetails;
+import com.nousin.springcloud.auth.framework.common.dto.UserDto;
+import com.nousin.springcloud.auth.framework.common.util.DozerUtil;
+import com.nousin.springcloud.auth.framework.security.entity.UserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 /**
  * 授权服务器配置
@@ -36,7 +33,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
-    @Value("${jwt.sign.key:123456}")
+    @Value("${nousin.security.jwt-sign-key:123456}")
     private String signKey; // 签名
     private AuthenticationManager authenticationManager;
 //    private PasswordEncoder passwordEncoder;
@@ -72,6 +69,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         endpoints
                 // .pathMapping("/oauth/token","/login")// 令牌端点 路由 映射到自定义 /login 路由
                 .tokenStore(tokenStore())
+                .accessTokenConverter(jwtAccessTokenConverter())
                 .authenticationManager(authenticationManager)
                 .tokenEnhancer(enhancerChain);
 //        endpoints.tokenServices(defaultTokenServices());
@@ -98,11 +96,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory()                  // 使用in-memory存储客户端信息
-                .withClient("browser")       // client_id
-//                .secret("secret")
-                .authorizedGrantTypes("refresh_token", "password") // 该client允许的授权类型
-                .scopes("read");// 允许的授权范围
+        clients.inMemory()
+                .withClient("client")
+                .secret("secret")
+                .authorizedGrantTypes("refresh_token", "password")
+                .scopes("default-scope");
 //        clients.jdbc(dataSource).passwordEncoder(passwordEncoder);
     }
 
@@ -123,33 +121,20 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      */
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-//        {
-//            @Override
-//            public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
-//                if (accessToken instanceof DefaultOAuth2AccessToken) {
-//                    //((DefaultOAuth2AccessToken) accessToken).setRefreshToken();
-//                    Object principal = authentication.getPrincipal();
-//                    if (principal instanceof MyUserDetails) {
-//                        MyUserDetails myUserDetails = (MyUserDetails) principal;
-//                        HashMap<String, Object> map = new HashMap<>();
-//                        map.put("user_id", myUserDetails.getUser().getId());
-//                        map.put("user_name", myUserDetails.getUser().getUsername());
-//                        ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(map);
-//                    }
-//                }
-//                return super.enhance(accessToken, authentication);
-//            }
-//        };
-        converter.setSigningKey(signKey);// 使用"111111"对数据进行加密
-        return converter;
+        JwtAccessTokenConverter accessTokenConverter = new JwtAccessTokenConverter();
+        // 对称加密
+        accessTokenConverter.setSigningKey(signKey);
+        return accessTokenConverter;
     }
 
     @Bean
     public TokenEnhancer jwtTokenEnhancer() {
         return (TokenEnhancer) (accessToken, authentication) -> {
+            // 用户信息
+            UserDetail userDetail = (UserDetail) authentication.getPrincipal();
+            UserDto userDto = DozerUtil.map(userDetail, UserDto.class);
             Map<String, Object> additionalInfo = new HashMap<>();
-            additionalInfo.put("organization", authentication.getName() + randomAlphabetic(4));
+            additionalInfo.put("extra", userDto);
             ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
             return accessToken;
         };

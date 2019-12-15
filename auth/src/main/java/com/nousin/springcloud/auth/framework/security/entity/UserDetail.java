@@ -1,5 +1,6 @@
-package com.nousin.springcloud.auth.framework.common.entity;
+package com.nousin.springcloud.auth.framework.security.entity;
 
+import com.nousin.springcloud.auth.framework.common.dto.UserDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.CredentialsContainer;
@@ -9,22 +10,37 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 /**
- * TODO
+ * UserDetails 实现
  *
  * @author tangwc
  * @since 2019/12/11
  */
 @Getter
 @Setter
-public class TUser implements UserDetails, CredentialsContainer {
-    private String id; // 用户Id
-    private String username; // 用户名称
+public class UserDetail extends UserDto implements UserDetails, CredentialsContainer {
+
+    private String username; // 用户登录名称
     private String password; // 密码
     private Collection<? extends GrantedAuthority> authorities;
 
     @Override
     public void eraseCredentials() {
-        this.authorities = null;
+        authorities = null;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
     }
 
     @Override

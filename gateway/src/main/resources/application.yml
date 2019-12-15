@@ -1,13 +1,19 @@
 server:
   port: 9000
 
-service-url:
-  order-service: http://localhost:8201
 
-service_name:
-  order: order-service
-  storage: storage-service
-  account: acount-service
+nousin:
+  base:
+    request-path: /gateway
+  security:
+    jwt-sign-key: 123456
+
+  service-name:
+    order: order-service
+    storage: storage-service
+    account: acount-service
+    auth: auth-service
+
 
 # Spring
 spring:
@@ -29,21 +35,26 @@ spring:
           #filters:
             #- StripPrefix=1 # 注意：Gateway默认转发是全路径的，设置StripPrefix=1表示从二级url路径转发，
       routes:
-        - id: ${service_name.order}_route_id # 表示路由的唯一id
+        - id: ${nousin.service-name.storage}_route_id
+            uri: lb://${nousin.service-name.auth}
+            predicates:
+              - Path=/oauth/**,/auth/**
+
+        - id: ${nousin.service-name.order}_route_id # 表示路由的唯一id
           # uri: ${service-url.user-service}/user/{id} #匹配后路由地址
-          uri: lb://${service_name.order} # 指向注册中心的服务，使用lb://服务名称，当然也可以通过http://localhost:8080指向服务
+          uri: lb://${nousin.service-name.order} # 指向注册中心的服务，使用lb://服务名称，当然也可以通过http://localhost:8080指向服务
           predicates: # 断言，路径相匹配的进行路由
             - Path=/order/** # 表示path地址，根据url，以order开头的会被转发到order-service服务上，需要注意的是后面/**和/*的区别
           #filters:
             #- StripPrefix=1 # 注意：Gateway默认转发是全路径的，设置StripPrefix=1表示从二级url路径转发，本路由中加入
         # storage
-        - id: ${service_name.storage}_route_id
-          uri: lb://${service_name.storage}
+        - id: ${nousin.service-name.storage}_route_id
+          uri: lb://${nousin.service-name.storage}
           predicates:
             - Path=/storage/**
         # account
-        - id: ${service_name.account}_route_id
-          uri: lb://${service_name.account}
+        - id: ${nousin.service-name.account}_route_id
+          uri: lb://${nousin.service-name.account}
           predicates:
             - Path=/account/**
 

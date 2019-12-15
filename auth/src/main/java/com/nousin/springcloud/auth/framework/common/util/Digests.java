@@ -1,7 +1,4 @@
-/**
- * Copyright (c) 2005-2012 springside.org.cn
- */
-package com.nousin.springcloud.auth.framework.security.util;
+package com.nousin.springcloud.auth.framework.common.util;
 
 import org.apache.commons.lang3.Validate;
 

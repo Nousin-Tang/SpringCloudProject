@@ -1,4 +1,4 @@
-package com.nousin.springcloud.gateway;
+package com.nousin.springcloud.gateway.framework;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

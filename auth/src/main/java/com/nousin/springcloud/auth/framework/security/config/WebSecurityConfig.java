@@ -3,7 +3,7 @@ package com.nousin.springcloud.auth.framework.security.config;
 
 import com.nousin.springcloud.auth.framework.security.handler.LoginFailureHandler;
 import com.nousin.springcloud.auth.framework.security.handler.LoginSuccessHandler;
-import com.nousin.springcloud.auth.framework.security.util.PasswordUtil;
+import com.nousin.springcloud.auth.framework.common.util.PasswordUtil;
 import com.nousin.springcloud.auth.framework.security.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,11 +17,12 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 /**
- * WEB安全配置类
+ * Spring Security安全配置类
  * 用于保护oauth要开放的资源，同时主要作用于client端以及token的认证(Bearer auth)
  *
  * @author tangwc
@@ -74,29 +75,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http.authorizeRequests()
-//                .antMatchers(HttpMethod.OPTIONS).permitAll()
-//                .antMatchers("/oauth/**").permitAll()
-//                .antMatchers("/login/**").permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//                .formLogin().loginPage("/login").successHandler(loginSuccessHandler).failureHandler(loginFailureHandler).permitAll()
-//                .and()
-//                .httpBasic()
-//                ;
-//                .and()
-//                .csrf().disable();
 
         http.authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .and()
+                // 基于token，所以不需要session
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .requestMatchers()
                 .antMatchers("/oauth/**")
                 .and()
                 .authorizeRequests()
-                .anyRequest().authenticated()
+                .antMatchers("/agent/**").authenticated()
                 .and()
                 .csrf().disable();
+        // 禁用缓存
+        http.headers().cacheControl();
     }
 
     /**

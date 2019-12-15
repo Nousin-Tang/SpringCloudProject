@@ -2,6 +2,7 @@ package com.nousin.springcloud.auth.framework.security.handler;
 
 import com.alibaba.fastjson.JSON;
 import com.nousin.springcloud.auth.framework.common.dto.ResultDto;
+import com.nousin.springcloud.auth.framework.common.util.ResultUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         System.err.println(JSON.toJSONString(authentication));
-        response.getWriter().write(JSON.toJSONString(new ResultDto("0","认证成功",authentication.getCredentials())));
+        response.getWriter().write(JSON.toJSONString(ResultUtil.success("认证成功", authentication.getCredentials())));
     }
 }

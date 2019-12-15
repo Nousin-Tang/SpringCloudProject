@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2019/12/12
  */
 @RestController
-@RequestMapping("${base.request.path}")
+@RequestMapping("${nousin.base.request-path}")
 public class AuthController {
     /**
      * TODO

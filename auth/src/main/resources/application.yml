@@ -6,6 +6,7 @@ spring:
   # 应用名称
   application:
     name: auth-service
+  cloud.nacos.discovery.server-addr: 127.0.0.1:8848 # Nacos
   # 数据源
   datasource:
     driverClassName: com.mysql.jdbc.Driver
@@ -13,6 +14,8 @@ spring:
     username: root
     password: 123456
 
-base:
-  request:
-    path: /auth
+nousin:
+  base:
+    request-path: /auth
+  security:
+    jwt-sign-key: 123456
