@@ -1,7 +1,7 @@
 package com.nousin.springcloud.auth.framework.security.service;
 
-import com.nousin.springcloud.auth.framework.common.util.PasswordUtil;
 import com.nousin.springcloud.auth.framework.security.entity.UserDetail;
+import com.nousin.springcloud.common.util.PasswordUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;

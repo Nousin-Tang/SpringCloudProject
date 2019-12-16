@@ -1,7 +1,8 @@
 package com.nousin.springcloud.gateway.framework.filter;
 
 import com.alibaba.fastjson.JSON;
-import com.nousin.springcloud.gateway.framework.common.dto.ResultDto;
+import com.nousin.springcloud.common.dto.ResultDto;
+import com.nousin.springcloud.common.util.ResultUtil;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -44,9 +46,7 @@ public class WrapperResponseFilter implements GlobalFilter {
                         // 释放掉内存
                         DataBufferUtils.release(dataBuffer);
                         String rs = new String(content, StandardCharsets.UTF_8);
-                        ResultDto response = new ResultDto("1", "请求成功", rs);
-
-                        byte[] newRs = JSON.toJSONString(response).getBytes(StandardCharsets.UTF_8);
+                        byte[] newRs = JSON.toJSONString(ResultUtil.success(rs)).getBytes(StandardCharsets.UTF_8);
                         originalResponse.getHeaders().setContentLength(newRs.length);//如果不重新设置长度则收不到消息。
                         return bufferFactory.wrap(newRs);
                     }));

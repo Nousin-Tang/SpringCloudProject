@@ -1,4 +1,4 @@
-package com.nousin.springcloud.auth.framework.common.util;
+package com.nousin.springcloud.common.util;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -85,20 +85,13 @@ public class MD5 {
 	 * @return 签名结果
 	 */
 	public static boolean verify(String text, String sign, String key, String input_charset) {
-		text = text + key;
-		String mysign = DigestUtils.md5Hex(getContentBytes(text, input_charset));
-		if (mysign.equals(sign)) {
-			return true;
-		} else {
-			return false;
-		}
+		return DigestUtils.md5Hex(getContentBytes(text + key, input_charset)).equals(sign);
 	}
 
 	/**
 	 * @param content
 	 * @param charset
 	 * @return
-	 * @throws SignatureException
 	 * @throws UnsupportedEncodingException
 	 */
 	private static byte[] getContentBytes(String content, String charset) {

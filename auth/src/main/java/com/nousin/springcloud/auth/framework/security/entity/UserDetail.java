@@ -1,6 +1,6 @@
 package com.nousin.springcloud.auth.framework.security.entity;
 
-import com.nousin.springcloud.auth.framework.common.dto.UserDto;
+import com.nousin.springcloud.common.dto.OauthUserInfoDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.CredentialsContainer;
@@ -17,7 +17,7 @@ import java.util.Collection;
  */
 @Getter
 @Setter
-public class UserDetail extends UserDto implements UserDetails, CredentialsContainer {
+public class UserDetail extends OauthUserInfoDto implements UserDetails, CredentialsContainer {
 
     private String username; // 用户登录名称
     private String password; // 密码

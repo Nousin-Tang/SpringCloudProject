@@ -14,8 +14,16 @@ spring:
     username: root
     password: 123456
 
+
 nousin:
   base:
     request-path: /auth
-  security:
-    jwt-sign-key: 123456
+  jwt:
+    sign-key: 123456
+    validity-seconds: 20
+
+  oauth2-client:
+      clientId: client
+      clientSecret: secret
+      grantType: refresh_token,password
+      scope: all

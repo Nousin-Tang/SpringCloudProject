@@ -1,9 +1,9 @@
-package com.nousin.springcloud.gateway.framework.security.filter;
+package com.nousin.springcloud.gateway.framework.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
-import com.nousin.springcloud.gateway.framework.common.util.ResultUtil;
+import com.nousin.springcloud.common.util.ResultUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -27,7 +27,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
@@ -42,7 +41,7 @@ import java.util.Date;
 @Slf4j
 public class JwtTokenFilter implements GlobalFilter {
 	// 存在则使用配置的key，不存在则使用随机的一个UUID
-	@Value("${nousin.security.jwt-sign-key:123456}")
+	@Value("${nousin.jwt.sign-key:123456}")
 	private String jwtSignKey; // jwt签名 与Auth-server 系统签名一样
 
 	/**

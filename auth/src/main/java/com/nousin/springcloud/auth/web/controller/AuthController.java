@@ -1,6 +1,6 @@
 package com.nousin.springcloud.auth.web.controller;
 
-import com.nousin.springcloud.auth.framework.common.util.ResultUtil;
+import com.nousin.springcloud.common.util.ResultUtil;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +25,6 @@ public class AuthController {
      */
     @RequestMapping(value="get", method = RequestMethod.GET)
     public Object get(@RequestParam String param){
-        return ResultUtil.success("");
+        return ResultUtil.success(param);
     }
 }

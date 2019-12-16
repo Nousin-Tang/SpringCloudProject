@@ -1,6 +1,4 @@
-package com.nousin.springcloud.auth.framework.common.util;
-
-import org.apache.commons.lang3.Validate;
+package com.nousin.springcloud.common.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,12 +6,10 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 
+import org.apache.commons.lang3.Validate;
+
 /**
- * 支持SHA-1/MD5消息摘要的工具类.
- * 
- * 返回ByteSource，可进一步被编码为Hex, Base64或UrlSafeBase64
- * 
- * @author calvin
+ * 支持SHA-1/MD5消息摘要的工具类. 返回ByteSource，可进一步被编码为Hex, Base64或UrlSafeBase64
  */
 public class Digests {
 

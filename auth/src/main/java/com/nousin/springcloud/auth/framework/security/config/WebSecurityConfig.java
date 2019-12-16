@@ -3,8 +3,8 @@ package com.nousin.springcloud.auth.framework.security.config;
 
 import com.nousin.springcloud.auth.framework.security.handler.LoginFailureHandler;
 import com.nousin.springcloud.auth.framework.security.handler.LoginSuccessHandler;
-import com.nousin.springcloud.auth.framework.common.util.PasswordUtil;
 import com.nousin.springcloud.auth.framework.security.service.UserDetailsServiceImpl;
+import com.nousin.springcloud.common.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +34,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Order(2)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("${base.request.path:}")
+    @Value("${nousin.base.request-path}")
     private String requestPath;
     private UserDetailsServiceImpl userService;
     private LoginSuccessHandler loginSuccessHandler;

@@ -1,8 +1,7 @@
 package com.nousin.springcloud.auth.framework.security.handler;
 
 import com.alibaba.fastjson.JSON;
-import com.nousin.springcloud.auth.framework.common.dto.ResultDto;
-import com.nousin.springcloud.auth.framework.common.util.ResultUtil;
+import com.nousin.springcloud.common.util.ResultUtil;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;

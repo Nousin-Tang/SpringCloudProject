@@ -1,8 +1,8 @@
 package com.nousin.springcloud.auth.framework.security.config;
 
-import com.nousin.springcloud.auth.framework.common.dto.UserDto;
-import com.nousin.springcloud.auth.framework.common.util.DozerUtil;
 import com.nousin.springcloud.auth.framework.security.entity.UserDetail;
+import com.nousin.springcloud.common.dto.OauthUserInfoDto;
+import com.nousin.springcloud.common.util.DozerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -33,8 +33,27 @@ import java.util.Map;
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
-    @Value("${nousin.security.jwt-sign-key:123456}")
-    private String signKey; // 签名
+    // 签名
+    @Value("${nousin.jwt.sign-key:123456}")
+    private String signKey;
+
+    // 失效时间
+    @Value("${nousin.jwt.validity-seconds:7200}")
+    private int jwtValiditySeconds;
+    // 失效时间
+    @Value("${nousin.oauth2-client.clientId:7200}")
+    private String clientId;
+    @Value("${nousin.oauth2-client.clientSecret:secret}")
+    private String clientSecret;
+    @Value("${nousin.oauth2-client.grantType:password}")
+    private String grantType;
+    @Value("${nousin.oauth2-client.scope:all}")
+    private String scope;
+
+
+
+
+
     private AuthenticationManager authenticationManager;
 //    private PasswordEncoder passwordEncoder;
 //    private DataSource dataSource;
@@ -97,10 +116,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
-                .withClient("client")
-                .secret("secret")
-                .authorizedGrantTypes("refresh_token", "password")
-                .scopes("default-scope");
+                .withClient(clientId)
+                .secret(clientSecret)
+                .authorizedGrantTypes(grantType.split(","))
+                .scopes(scope)
+                .accessTokenValiditySeconds(jwtValiditySeconds);
 //        clients.jdbc(dataSource).passwordEncoder(passwordEncoder);
     }
 
@@ -129,10 +149,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Bean
     public TokenEnhancer jwtTokenEnhancer() {
-        return (TokenEnhancer) (accessToken, authentication) -> {
+        return (accessToken, authentication) -> {
             // 用户信息
             UserDetail userDetail = (UserDetail) authentication.getPrincipal();
-            UserDto userDto = DozerUtil.map(userDetail, UserDto.class);
+            OauthUserInfoDto userDto = DozerUtil.map(userDetail, OauthUserInfoDto.class);
             Map<String, Object> additionalInfo = new HashMap<>();
             additionalInfo.put("extra", userDto);
             ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);

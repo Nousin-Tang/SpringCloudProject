@@ -1,45 +1,47 @@
-package com.vanew.springcloud.newretailing.gateway.framework.security.config;
+package com.nousin.springcloud.gateway.framework.security.config;
 
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.core.annotation.Order;
-//import org.springframework.http.HttpMethod;
-//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-//import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-//import org.springframework.security.config.http.SessionCreationPolicy;
-
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
+import org.springframework.security.web.server.util.matcher.NegatedServerWebExchangeMatcher;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 
 /**
- * Spring Security 安全配置类
+ * 安全配置类
  *
  * @author tangwc
- * @since 2019/12/10
+ * @since 2019/12/16
  */
-//@Configuration
-//@EnableWebSecurity
-//@Order(2)
-public class WebSecurityServerConfig
-//        extends WebSecurityConfigurerAdapter
-{
+@Configuration
+@EnableWebFluxSecurity
+public class WebSecurityServerConfig {
 
-    /**
-     * http安全配置
-     *
-     * @param http http安全对象
-     * @throws Exception http安全异常信息
-     */
-//    @Override
-//    public void configure(HttpSecurity http) throws Exception {
-//
-//        http.authorizeRequests()
-//                .antMatchers(HttpMethod.OPTIONS).permitAll()
-//                .and()
-//                // 基于token，所以不需要session
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .csrf().disable();
-//        // 禁用缓存
-//        http.headers().cacheControl();
-//    }
+    @Bean
+    public SecurityWebFilterChain oauthTokenAuthConfig(
+            ServerHttpSecurity security, AuthenticationWebFilter oauthAuthenticationWebFilter) {
 
+        return security
+                .csrf().disable()
+                .logout().disable()
+                .httpBasic().disable()
+                .formLogin().disable()
+                .exceptionHandling().and()
+                .securityMatcher(notMatches("/oauth/**"))
+                .addFilterAt(oauthAuthenticationWebFilter, SecurityWebFiltersOrder.HTTP_BASIC)
+                .authorizeExchange().anyExchange().authenticated()
+                .and().build();
+    }
+
+    private ServerWebExchangeMatcher matches(String ... routes) {
+        return ServerWebExchangeMatchers.pathMatchers(routes);
+    }
+
+    private ServerWebExchangeMatcher notMatches(String ... routes) {
+        return new NegatedServerWebExchangeMatcher(matches(routes));
+    }
 }

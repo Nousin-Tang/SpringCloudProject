@@ -1,8 +1,8 @@
-package com.nousin.springcloud.auth.framework.common.dto;
+package com.nousin.springcloud.common.dto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -11,9 +11,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 public class ResultDto {
-	private String code;
+	private String resultCode;
 	private String msg;
 	private Object data;
 }

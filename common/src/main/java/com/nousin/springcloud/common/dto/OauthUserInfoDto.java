@@ -1,17 +1,17 @@
-package com.nousin.springcloud.auth.framework.common.dto;
+package com.nousin.springcloud.common.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * TODO
+ * Spring Security UserDetail实现
  *
  * @author tangwc
- * @since 2019/12/13
+ * @since 2019/12/16
  */
 @Getter
 @Setter
-public class UserDto {
+public class OauthUserInfoDto {
     private String id; // 用户Id
     private String name; // 用户名称
     private String language; // 语言种类
