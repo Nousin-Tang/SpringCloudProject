@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class ResultDto {
-	private String resultCode;
-	private String msg;
+	private String code;
+	private String message;
 	private Object data;
 }

@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 /**
  * 测试代码
@@ -24,7 +26,7 @@ public class AuthController {
      * @return
      */
     @RequestMapping(value="get", method = RequestMethod.GET)
-    public Object get(@RequestParam String param){
+    public Object get(@RequestParam String param, HttpServletRequest request){
         return ResultUtil.success(param);
     }
 }

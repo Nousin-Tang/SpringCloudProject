@@ -1,9 +1,11 @@
 package com.nousin.springcloud.auth.framework.security.config;
 
 import com.nousin.springcloud.auth.framework.security.entity.UserDetail;
+import com.nousin.springcloud.auth.framework.security.service.UserDetailsServiceImpl;
 import com.nousin.springcloud.common.dto.OauthUserInfoDto;
 import com.nousin.springcloud.common.util.DozerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +57,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
 
     private AuthenticationManager authenticationManager;
+    @Autowired@Qualifier("userDetailService")
+    private UserDetailsServiceImpl userDetailService;
 //    private PasswordEncoder passwordEncoder;
 //    private DataSource dataSource;
 
@@ -66,13 +70,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      *                              //     * @param dataSource            数据源
      */
     @Autowired
-    public AuthorizationServerConfig(AuthenticationManager authenticationManager
-//            , PasswordEncoder passwordEncoder
-//            , DataSource dataSource
-    ) {
+    public AuthorizationServerConfig(AuthenticationManager authenticationManager, UserDetailsServiceImpl userDetailService) {
         this.authenticationManager = authenticationManager;
-//        this.passwordEncoder = passwordEncoder;
-//        this.dataSource = dataSource;
+        this.userDetailService = userDetailService;
     }
 
     /**
@@ -85,13 +85,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         //      将增强的token设置到增强链中
         TokenEnhancerChain enhancerChain = new TokenEnhancerChain();
         enhancerChain.setTokenEnhancers(Arrays.asList(jwtTokenEnhancer(), jwtAccessTokenConverter()));
-        endpoints
-                // .pathMapping("/oauth/token","/login")// 令牌端点 路由 映射到自定义 /login 路由
-                .tokenStore(tokenStore())
+        endpoints.tokenStore(tokenStore())
                 .accessTokenConverter(jwtAccessTokenConverter())
                 .authenticationManager(authenticationManager)
+                .userDetailsService(userDetailService)
                 .tokenEnhancer(enhancerChain);
-//        endpoints.tokenServices(defaultTokenServices());
     }
 
     /**
@@ -121,7 +119,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .authorizedGrantTypes(grantType.split(","))
                 .scopes(scope)
                 .accessTokenValiditySeconds(jwtValiditySeconds);
-//        clients.jdbc(dataSource).passwordEncoder(passwordEncoder);
     }
 
     /**
@@ -159,35 +156,4 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
             return accessToken;
         };
     }
-
-//    /**
-//     * <p>注意，自定义TokenServices的时候，需要设置@Primary，否则报错，</p>
-//     * @return
-//     */
-//    @Primary
-//    @Bean
-//    public DefaultTokenServices defaultTokenServices(){
-//        DefaultTokenServices tokenServices = new DefaultTokenServices();
-//        tokenServices.setTokenStore(tokenStore());
-//        tokenServices.setSupportRefreshToken(true);
-//        //tokenServices.setClientDetailsService(clientDetails());
-//        // token有效期自定义设置，默认12小时
-//        tokenServices.setAccessTokenValiditySeconds(60*60*12);
-//        // refresh_token默认30天
-//        tokenServices.setRefreshTokenValiditySeconds(60 * 60 * 24 * 7);
-//        return tokenServices;
-//    }
-
-//     基于Redis的存储方式
-//     redis连接工厂
-//    @Autowired
-//    private JedisConnectionFactory JedisConnectionFactory;
-//    /**
-//     * 令牌存储
-//     * @return redis令牌存储对象
-//     */
-//    @Bean
-//    public TokenStore tokenStore() {
-//        return new RedisTokenStore(JedisConnectionFactory);
-//    }
 }

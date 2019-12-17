@@ -20,7 +20,7 @@ nousin:
     request-path: /auth
   jwt:
     sign-key: 123456
-    validity-seconds: 20
+    validity-seconds: 7200
 
   oauth2-client:
       clientId: client

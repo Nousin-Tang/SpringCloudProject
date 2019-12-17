@@ -10,11 +10,7 @@ import com.sun.istack.internal.Nullable;
  * @since 2019/12/16
  */
 public class ResultUtil {
-	/**
-	 * 操作成功
-	 * @param data
-	 * @return
-	 */
+	// ----------------------- 成功 -----------------------
 	public static ResultDto success(Object data) {
 		return new ResultDto("0", "操作成功", data);
 	}
@@ -23,18 +19,26 @@ public class ResultUtil {
 		return new ResultDto("0", message, data);
 	}
 
-	/**
-	 * 系统错误
-	 * @param data
-	 * @return
-	 */
-	public static ResultDto authError(@Nullable Object data) {
-		return new ResultDto("99", "系统错误", data);
+	// ----------------------- 失败 -----------------------
+
+	// --------- 系统错误 ---------
+	public static ResultDto error(Object data) {
+		return new ResultDto("9999", "系统错误", data);
 	}
-	public static ResultDto fail(@Nullable Object data) {
-		return new ResultDto("9", "系统错误", data);
+	public static ResultDto fail(String code, String message) {
+		return new ResultDto(code, message, null);
 	}
-	public static ResultDto error(@Nullable Object data) {
-		return new ResultDto("99", "系统错误", data);
+	public static ResultDto fail(String message) {
+		return new ResultDto("9", message, null);
 	}
+
+	// --------- 权限认证或校验错误 ---------
+	public static ResultDto authError() {
+		return new ResultDto("99", "认证系统繁忙", null);
+	}
+	public static ResultDto authFailed(String code, String message) {
+		return new ResultDto(code, message, null);
+	}
+
+
 }

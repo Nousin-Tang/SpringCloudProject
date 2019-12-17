@@ -41,26 +41,24 @@ import java.util.function.Function;
  */
 @Configuration
 public class OAuth2Config {
-    // 存在则使用配置的key，不存在则使用随机的一个UUID
+    // jwt签名与Auth-server系统签名一样
     @Value("${nousin.jwt.sign-key:123456}")
-    private String jwtSignKey; // jwt签名 与Auth-server 系统签名一样
+    private String jwtSignKey;
 
     @Bean("oauthAuthenticationWebFilter")
     AuthenticationWebFilter oauthAuthenticationWebFilter() {
 
         AuthenticationWebFilter filter = new AuthenticationWebFilter(reactiveAuthenticationManager());
         filter.setServerAuthenticationConverter(oAuthTokenConverter()::apply);
-        filter.setAuthenticationSuccessHandler((webFilterExchange, authentication)->{
-            ServerHttpResponse response = webFilterExchange.getExchange().getResponse();
-            response.setStatusCode(HttpStatus.OK);
-            String body = JSONObject.toJSONString(ResultUtil.success(authentication));
-            DataBuffer buffer = response.bufferFactory().wrap(body.getBytes(StandardCharsets.UTF_8));
-            return response.writeWith(Mono.just(buffer));
+        filter.setAuthenticationSuccessHandler((exchange, authentication)->{
+            ServerWebExchange serverWebExchange = exchange.getExchange();
+            serverWebExchange.getResponse().getHeaders().add("userInfo", authentication.toString());
+            return exchange.getChain().filter(serverWebExchange);
         });
         filter.setAuthenticationFailureHandler((webFilterExchange, authenticationException)->{
             ServerHttpResponse response = webFilterExchange.getExchange().getResponse();
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
-            String body = JSONObject.toJSONString(ResultUtil.success(authenticationException));
+            String body = JSONObject.toJSONString(ResultUtil.success(authenticationException.getMessage()));
             DataBuffer buffer = response.bufferFactory().wrap(body.getBytes(StandardCharsets.UTF_8));
             return response.writeWith(Mono.just(buffer));
         });
@@ -69,7 +67,6 @@ public class OAuth2Config {
 
     @Bean
     public ReactiveAuthenticationManager reactiveAuthenticationManager(){
-        final AuthenticationManager authenticationManager;
         return (authentication)->
             Mono.just(authentication).publishOn(Schedulers.elastic()).flatMap(t -> {
                 try {
@@ -81,47 +78,13 @@ public class OAuth2Config {
     }
     private AuthenticationManager oauthManager() {
         OAuth2AuthenticationManager oauthAuthenticationManager = new OAuth2AuthenticationManager();
-
         oauthAuthenticationManager.setResourceId("");
         oauthAuthenticationManager.setTokenServices(tokenServices());
         return oauthAuthenticationManager;
     }
 
-
-//    @Component
-//    public static class OAuth2AuthenticationManagerAdapter implements ReactiveAuthenticationManager {
-//
-//        private final AuthenticationManager authenticationManager;
-//
-//        @Autowired
-//        public OAuth2AuthenticationManagerAdapter(ResourceServerTokenServices tokenServices) {
-//            this.authenticationManager = oauthManager(tokenServices);
-//        }
-//
-//        public Mono<Authentication> authenticate(Authentication token) {
-//            return Mono.just(token).publishOn(Schedulers.elastic()).flatMap(t -> {
-//                try {
-//                    return Mono.just(this.authenticationManager.authenticate(t));
-//                } catch (Exception x) {
-//                    return Mono.error(new BadCredentialsException("Invalid or expired access token presented"));
-//                }
-//            }).filter(Authentication::isAuthenticated);
-//        }
-//
-//        private AuthenticationManager oauthManager(ResourceServerTokenServices tokenServices) {
-//            OAuth2AuthenticationManager oauthAuthenticationManager = new OAuth2AuthenticationManager();
-//
-//            oauthAuthenticationManager.setResourceId("");
-//            oauthAuthenticationManager.setTokenServices(tokenServices);
-//            return oauthAuthenticationManager;
-//        }
-//
-//    }
-
-
     @Bean
     public ResourceServerTokenServices tokenServices() {
-
         DefaultTokenServices tokenServices = new DefaultTokenServices();
         tokenServices.setSupportRefreshToken(false);
         tokenServices.setTokenStore(tokenStore());
@@ -159,34 +122,10 @@ public class OAuth2Config {
                 return Mono.empty();
             }
             String token = authorization.substring(BEARER.length());
-            if (token != null) {
+            if (StringUtils.isNotBlank(token)) {
                 return Mono.just(new PreAuthenticatedAuthenticationToken(token, ""));
             }
             return Mono.empty();
         };
     }
-
-//    @Component
-//    public static class OAuthTokenConverter implements Function<ServerWebExchange, Mono<Authentication>> {
-//
-//        private static final String BEARER = "bearer ";
-//
-//        @Override
-//        public Mono<Authentication> apply(ServerWebExchange exchange) {
-//            String token = extractToken(exchange.getRequest());
-//            if (token != null) {
-//                return Mono.just(new PreAuthenticatedAuthenticationToken(token, ""));
-//            }
-//            return Mono.empty();
-//        }
-//
-//        private String extractToken(ServerHttpRequest request) {
-//            String token = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-//            if (StringUtils.isBlank(token) || !token.toLowerCase().startsWith(BEARER)) {
-//                return null;
-//            }
-//            return token.substring(BEARER.length());
-//        }
-//
-//    }
 }

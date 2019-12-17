@@ -1,8 +1,5 @@
 package com.nousin.springcloud.auth.framework.security.config;
 
-
-import com.nousin.springcloud.auth.framework.security.handler.LoginFailureHandler;
-import com.nousin.springcloud.auth.framework.security.handler.LoginSuccessHandler;
 import com.nousin.springcloud.auth.framework.security.service.UserDetailsServiceImpl;
 import com.nousin.springcloud.common.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +34,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${nousin.base.request-path}")
     private String requestPath;
     private UserDetailsServiceImpl userService;
-    private LoginSuccessHandler loginSuccessHandler;
-    private LoginFailureHandler loginFailureHandler;
 
     /**
      * 构造器注入用户Service
@@ -47,13 +42,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      * @param userService 用户Service
      */
     @Autowired
-    public WebSecurityConfig(@Qualifier("userDetailService") UserDetailsServiceImpl userService,
-                             @Qualifier("loginSuccessHandler") LoginSuccessHandler loginSuccessHandler,
-                             @Qualifier("loginFailureHandler") LoginFailureHandler loginFailureHandler
-    ) {
+    public WebSecurityConfig(@Qualifier("userDetailService") UserDetailsServiceImpl userService) {
         this.userService = userService;
-        this.loginSuccessHandler = loginSuccessHandler;
-        this.loginFailureHandler = loginFailureHandler;
     }
 
     /**
@@ -76,16 +66,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS).permitAll()
-                .and()
-                // 基于token，所以不需要session
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .requestMatchers()
+        http.requestMatchers()
                 .antMatchers("/oauth/**")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/agent/**").authenticated()
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
+                .and()
+                .authorizeRequests()
+                .anyRequest().authenticated()
+                .and()
+                // 基于token，所以不需要session
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .csrf().disable();
         // 禁用缓存
@@ -112,8 +103,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-
+        // return new BCryptPasswordEncoder();
         // 使用jeeSite内部加密算法
         return new PasswordEncoder() {
             @Override
