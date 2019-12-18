@@ -2,6 +2,14 @@
 server:
   port: 9101
 
+
+nousin:
+  base:
+    request-path: /order
+  hello.word: nihao
+  server:
+    auth: auth-service
+
 # Spring
 spring:
   # 应用名称
@@ -14,16 +22,29 @@ spring:
     username: root
     password: 123456
 
+#security:
+#  oauth2:
+#    client:
+#      client-id: browser
+##      client-secret: clientsecret
+#      user-authorization-uri:  http://127.0.0.1:9101/oauth/authorize
+#      access-token-uri:  http://127.0.0.1:9101/oauth/token
+#    resource:
+#      jwt:
+#        key-uri:  http://127.0.0.1:9101/oauth/token_key
 
 security:
   oauth2:
     client:
-      client-id: browser
-#      client-secret: clientsecret
-      user-authorization-uri:  http://127.0.0.1:9101/oauth/authorize
-      access-token-uri:  http://127.0.0.1:9101/oauth/token
+      clientId: client
+      clientSecret: secret
+      grant-type: refresh_token,password
+      scope: all
+      accessTokenUri: lb://${nousin.server.auth}/oauth/token
+      userAuthorizationUri: lb://${nousin.server.auth}/oauth/authorize
+      access-token-validity-seconds: 7200
+      clientAuthenticationScheme: form
     resource:
       jwt:
-        key-uri:  http://127.0.0.1:9101/oauth/token_key
+        key-uri: lb://${nousin.server.auth}/oauth/token_key
 
-hello.word: nihao

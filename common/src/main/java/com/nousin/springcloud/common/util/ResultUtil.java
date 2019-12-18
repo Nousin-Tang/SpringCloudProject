@@ -1,7 +1,6 @@
 package com.nousin.springcloud.common.util;
 
 import com.nousin.springcloud.common.dto.ResultDto;
-import com.sun.istack.internal.Nullable;
 
 /**
  * 结果返回工具类

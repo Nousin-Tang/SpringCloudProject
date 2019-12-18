@@ -83,7 +83,7 @@
             <version>0.9.1</version>
         </dependency>
 
-        <!-- 公共依赖 -->
+        <!-- Common依赖 -->
         <dependency>
             <groupId>com.nousin.springcloud</groupId>
             <artifactId>common</artifactId>

@@ -1,31 +1,34 @@
 package com.nousin.springcloud.gateway.framework.security.config;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.nousin.springcloud.common.util.ResultUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationManager;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.security.web.server.WebFilterExchange;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
-import org.springframework.stereotype.Component;
+import org.springframework.security.web.server.util.matcher.NegatedServerWebExchangeMatcher;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -40,19 +43,54 @@ import java.util.function.Function;
  * @since 2019/12/16
  */
 @Configuration
+@EnableWebFluxSecurity
 public class OAuth2Config {
     // jwt签名与Auth-server系统签名一样
     @Value("${nousin.jwt.sign-key:123456}")
     private String jwtSignKey;
 
+    @Bean
+    public SecurityWebFilterChain oauthTokenAuthConfig(
+            ServerHttpSecurity security, AuthenticationWebFilter oauthAuthenticationWebFilter) {
+
+        return security
+                .csrf().disable()
+                .logout().disable()
+                .httpBasic().disable()
+                .formLogin().disable()
+                .exceptionHandling().and()
+                .securityMatcher(notMatches("/oauth/**"))
+                .addFilterAt(oauthAuthenticationWebFilter, SecurityWebFiltersOrder.HTTP_BASIC)
+                .authorizeExchange().anyExchange().authenticated()
+                .and().build();
+    }
+
+    private ServerWebExchangeMatcher matches(String ... routes) {
+        return ServerWebExchangeMatchers.pathMatchers(routes);
+    }
+
+    private ServerWebExchangeMatcher notMatches(String ... routes) {
+        return new NegatedServerWebExchangeMatcher(matches(routes));
+    }
+
     @Bean("oauthAuthenticationWebFilter")
-    AuthenticationWebFilter oauthAuthenticationWebFilter() {
+    public AuthenticationWebFilter oauthAuthenticationWebFilter() {
 
         AuthenticationWebFilter filter = new AuthenticationWebFilter(reactiveAuthenticationManager());
         filter.setServerAuthenticationConverter(oAuthTokenConverter()::apply);
         filter.setAuthenticationSuccessHandler((exchange, authentication)->{
             ServerWebExchange serverWebExchange = exchange.getExchange();
-            serverWebExchange.getResponse().getHeaders().add("userInfo", authentication.toString());
+
+            String path = serverWebExchange.getRequest().getURI().getPath();
+            HttpHeaders headers = serverWebExchange.getRequest().getHeaders();
+            // 用户所具有的的权限集合
+            authentication.getAuthorities();
+
+            headers.add("userInfo", authentication.toString());
+            headers.forEach((k,v)->{
+                System.out.println(k);
+                System.out.println(JSON.toJSONString(v));
+            });
             return exchange.getChain().filter(serverWebExchange);
         });
         filter.setAuthenticationFailureHandler((webFilterExchange, authenticationException)->{
@@ -76,7 +114,9 @@ public class OAuth2Config {
                 }
             }).filter(Authentication::isAuthenticated);
     }
-    private AuthenticationManager oauthManager() {
+
+    @Bean
+    public AuthenticationManager oauthManager() {
         OAuth2AuthenticationManager oauthAuthenticationManager = new OAuth2AuthenticationManager();
         oauthAuthenticationManager.setResourceId("");
         oauthAuthenticationManager.setTokenServices(tokenServices());

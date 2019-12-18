@@ -73,6 +73,7 @@ security:
     resource:
       jwt:
         key-uri: lb://${nousin.server.auth}/oauth/token_key
+      user-info-uri: lb://${nousin.server.auth}/auth/get
 
 
 # logging

@@ -1,6 +1,5 @@
 package com.nousin.springcloud.server.order.web.controller;
 
-import com.nousin.springcloud.server.order.framework.common.dto.ResultDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +15,11 @@ import java.util.Map;
  * @since 2019/12/8
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("${nousin.base.request-path}")
 //@RefreshScope // 配置文件中配置了 management.endpoints.web.exposure.include=refresh 时，
 // 执行 curl -X POST http://localhost:8001/bus/refresh 请求时就会刷新 ${hello.word} 的值
 public class OrderController {
-    @Value("${hello.word:hello}")
+    @Value("${nousin.hello.word:hello}")
     private String word;
 
     @GetMapping("/member")

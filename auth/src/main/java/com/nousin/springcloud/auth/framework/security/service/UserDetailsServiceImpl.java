@@ -34,7 +34,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		} else {
 			userInfo.setTenantCode("HD");
 		}
-        userInfo.setAuthorities(AuthorityUtils.createAuthorityList("user"));
+        userInfo.setAuthorities(AuthorityUtils.createAuthorityList("user","hello"));
         return userInfo;
     }
 }
