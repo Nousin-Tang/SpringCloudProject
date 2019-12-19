@@ -7,6 +7,17 @@ nousin:
   base:
     request-path: /order
   hello.word: nihao
+  security:
+    oauth2:
+      jwt-sign-key: 123456
+  feign:
+    server:
+      account: account-server
+      storage: storage-server
+    ok-http:
+      connect-timeout: 60
+      read-timeout: 60
+      write-Timeout: 120
   server:
     auth: auth-service
 
@@ -21,6 +32,28 @@ spring:
     url: jdbc:mysql://localhost:3306/order?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8
     username: root
     password: 123456
+
+feign:
+  # feign启用hystrix，才能熔断、降级
+  # hystrix:
+  # enabled: true
+  # 启用 okhttp 关闭默认 httpclient
+  httpclient:
+    enabled: false #关闭httpclient
+    # 配置连接池
+    max-connections: 200 #feign的最大连接数
+    max-connections-per-route: 50 #fegin单个路径的最大连接数
+  okhttp:
+    enabled: true
+  # 请求与响应的压缩以提高通信效率
+  compression:
+    request:
+      enabled: true
+      min-request-size: 2048
+      mime-types: text/xml,application/xml,application/json
+    response:
+      enabled: true
+
 
 #security:
 #  oauth2:

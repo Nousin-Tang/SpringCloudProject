@@ -6,7 +6,7 @@ server:
 spring:
   # 应用名称
   application:
-    name: storage-service
+    name: storage-server
   # Spring Cloud 配置
   cloud:
     # Nacos
