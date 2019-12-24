@@ -12,7 +12,7 @@ import org.dozer.loader.api.TypeMappingOptions;
 
 /**
  * 对象转换工具类
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/16
  */
 public class DozerUtil {

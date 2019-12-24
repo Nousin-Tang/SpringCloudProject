@@ -2,15 +2,30 @@
 server:
   port: 9102
 
+nousin:
+  base:
+    request-path: /storage
+  jwt:
+    sign-key: 123456
+
+
 # Spring
 spring:
   # 应用名称
   application:
-    name: storage-server
+    name: storage-service
   # Spring Cloud 配置
   cloud:
     # Nacos
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+  # 数据库配置
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/cloud_storage?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8
+    username: root
+    password: 123456
 
+mybatis:
+  mapper-locations: classpath:/mapper/**

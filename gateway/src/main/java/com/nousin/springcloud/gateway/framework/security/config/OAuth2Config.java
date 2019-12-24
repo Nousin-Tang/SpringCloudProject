@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,6 +19,7 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationManager;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
@@ -34,12 +36,13 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.function.Function;
 
 /**
  * TODO
  *
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/16
  */
 @Configuration
@@ -82,16 +85,23 @@ public class OAuth2Config {
             ServerWebExchange serverWebExchange = exchange.getExchange();
 
             String path = serverWebExchange.getRequest().getURI().getPath();
-            HttpHeaders headers = serverWebExchange.getRequest().getHeaders();
-            // 用户所具有的的权限集合
-            authentication.getAuthorities();
 
-            headers.add("userInfo", authentication.toString());
-            headers.forEach((k,v)->{
-                System.out.println(k);
-                System.out.println(JSON.toJSONString(v));
-            });
-            return exchange.getChain().filter(serverWebExchange);
+            // 获取访问该路由需要的权限
+            // TODO
+
+
+            // 用户所具有的的权限集合
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+            for (GrantedAuthority authority : authorities) {
+                System.out.println(authority.getAuthority());
+            }
+
+            // 构造新的请求
+            ServerHttpRequest request = serverWebExchange.getRequest();
+            // 向请求头中添加用户信息
+            ServerHttpRequest serverHttpRequest = request.mutate().header("extractTokenInfo", authentication.toString()).build();
+            return exchange.getChain().filter(serverWebExchange.mutate().request(serverHttpRequest).build());
+
         });
         filter.setAuthenticationFailureHandler((webFilterExchange, authenticationException)->{
             ServerHttpResponse response = webFilterExchange.getExchange().getResponse();

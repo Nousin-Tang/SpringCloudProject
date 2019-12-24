@@ -6,7 +6,7 @@ import lombok.Setter;
 /**
  * Spring Security UserDetail实现
  *
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/16
  */
 @Getter

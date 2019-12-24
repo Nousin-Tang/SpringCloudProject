@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * 重写令牌申请接口，并自定义返回格式
  *
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/17
  */
 @RestController

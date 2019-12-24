@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
+import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
@@ -28,7 +29,7 @@ import java.util.Map;
 /**
  * 授权服务器配置
  *
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/10
  */
 @Configuration
@@ -51,10 +52,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private String grantType;
     @Value("${nousin.oauth2-client.scope:all}")
     private String scope;
-
-
-
-
 
     private AuthenticationManager authenticationManager;
     @Autowired@Qualifier("userDetailService")
@@ -89,7 +86,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .accessTokenConverter(jwtAccessTokenConverter())
                 .authenticationManager(authenticationManager)
                 .userDetailsService(userDetailService)
-                .tokenEnhancer(enhancerChain);
+                .tokenEnhancer(enhancerChain)
+        ;
     }
 
     /**
@@ -126,6 +124,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      *
      * @return
      */
+
+//    @Bean
+//    public InMemoryTokenStore tokenStore(){
+//        return new InMemoryTokenStore();
+//    }
     @Bean
     public JwtTokenStore tokenStore() {
         return new JwtTokenStore(jwtAccessTokenConverter());

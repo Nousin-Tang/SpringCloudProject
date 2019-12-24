@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nousin.springcloud.server.storage.framework.security.dao.PermissionMapper" >
+
+
+    <select id="findAllPermissions" resultType="com.nousin.springcloud.server.storage.framework.security.model.Permission">
+        select id,  ifnull(href,'') as url, ifnull(permission,'') as permission from sys_menu where del_flag=0
+    </select>
+</mapper>

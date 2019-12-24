@@ -22,7 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * Spring Security安全配置类
  * 用于保护oauth要开放的资源，同时主要作用于client端以及token的认证(Bearer auth)
  *
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/10
  */
 @Configuration

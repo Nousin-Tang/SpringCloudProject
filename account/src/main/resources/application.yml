@@ -4,8 +4,17 @@ server:
   port: 9103
 
 spring:
+  # 应用名称
   application:
-    name: account-server # 应用名称
+    name: account-server
+
+  # 数据库配置
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/cloud_order?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8
+    username: root
+    password: 123456
+
   # Cloud配置
   cloud:
     # Nacos

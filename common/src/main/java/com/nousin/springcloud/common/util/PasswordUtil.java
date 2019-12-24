@@ -12,7 +12,7 @@ import java.security.SecureRandom;
 /**
  * 密码加密与匹配工具
  *
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/11
  */
 public class PasswordUtil {

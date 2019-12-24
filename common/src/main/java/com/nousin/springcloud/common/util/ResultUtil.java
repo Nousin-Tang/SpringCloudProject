@@ -5,7 +5,7 @@ import com.nousin.springcloud.common.dto.ResultDto;
 /**
  * 结果返回工具类
  *
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/16
  */
 public class ResultUtil {

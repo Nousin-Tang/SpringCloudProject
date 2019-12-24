@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
  * 资源服务配置
  * 用于保护oauth相关的endpoints，同时主要作用于用户的登录(form login,Basic auth)
  *
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/11
  */
 @Configuration

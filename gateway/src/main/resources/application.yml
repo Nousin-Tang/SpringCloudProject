@@ -67,7 +67,7 @@ security:
       grant-type: refresh_token,password
       scope: all
       accessTokenUri: lb://${nousin.server.auth}/oauth/token
-      userAuthorizationUri: lb://${nousin.server.auth}/oauth/authorize
+#      userAuthorizationUri: lb://${nousin.server.auth}/oauth/authorize
       access-token-validity-seconds: 7200
       clientAuthenticationScheme: form
     resource:

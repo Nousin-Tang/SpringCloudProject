@@ -33,7 +33,7 @@ import java.util.Date;
 /**
  * JwtToken 过滤器
  *
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/10
  */
 @Component
@@ -80,6 +80,12 @@ public class JwtTokenFilter implements GlobalFilter {
 			return chain.filter(build);
 		}
 		HttpHeaders headers = request.getHeaders();
+
+		String extractTokenInfo = headers.getFirst("extractTokenInfo");
+		if (StringUtils.isNotBlank(extractTokenInfo)) {
+			return chain.filter(exchange);
+		}
+
 		//获取token
 		String token = headers.getFirst("Authorization");
 		if (StringUtils.isBlank(token)) {
@@ -95,7 +101,7 @@ public class JwtTokenFilter implements GlobalFilter {
 				//解密token
 				String extractToken = extractToken(token);
 				// 构造新的请求
-				ServerHttpRequest serverHttpRequest = request.mutate().header("tokenInfo", extractToken).build();
+				ServerHttpRequest serverHttpRequest = request.mutate().header("extractTokenInfo", extractToken).build();
 				return chain.filter(exchange.mutate().request(serverHttpRequest).build());
 			} catch (ExpiredJwtException e) {
 				log.error("e", e);

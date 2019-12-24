@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
  * 测试代码
  * 获取token：http://localhost:9002/oauth/token?grant_type=password&username=ad8min&password=123456
  * 代码中可以通过 SecurityContextHolder.getContext() 获取验证信息上下文
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/12
  */
 @RestController

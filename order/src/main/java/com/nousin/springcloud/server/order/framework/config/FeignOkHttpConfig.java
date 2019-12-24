@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Feign Ok Http配置
  *
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/19
  */
 @AutoConfigureBefore(FeignAutoConfiguration.class)

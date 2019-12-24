@@ -22,11 +22,11 @@ import java.nio.charset.StandardCharsets;
 /**
  * 返回数据的包装类
  *
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/9
  */
 @Component
-@Order(-10) // 需要注意的是order需要小于-1，需要先于NettyWriteResponseFilter过滤器执行。
+@Order(-230) // 需要注意的是order需要小于-1，需要先于NettyWriteResponseFilter过滤器执行。
 public class WrapperResponseFilter implements GlobalFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {

@@ -12,7 +12,7 @@ import java.util.Collection;
 /**
  * UserDetails 实现
  *
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/11
  */
 @Getter

@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * Feign客户端 - 上传
  * 需引入 io.github.openfeign.form:feign-form 与 io.github.openfeign.form:feign-form-spring包
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/19
  */
 @FeignClient(name = "${nousin.feign.server.storage}", configuration = UploadFeignClient.MultipartSupportConfig.class)

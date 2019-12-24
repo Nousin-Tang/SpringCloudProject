@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 /**
  * 实现 UserDetailsService 接口的用户Service
  *
- * @author tangwc
+ * @author Nousin
  * @since 2019/12/11
  */
 @Service("userDetailService")
@@ -34,7 +34,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		} else {
 			userInfo.setTenantCode("HD");
 		}
-        userInfo.setAuthorities(AuthorityUtils.createAuthorityList("user","hello"));
+        userInfo.setAuthorities(AuthorityUtils.createAuthorityList("user"));
         return userInfo;
     }
 }
