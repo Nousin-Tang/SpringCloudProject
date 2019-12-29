@@ -33,7 +33,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 /**
- * TODO
+ * 服务层 Spring Security 配置
  *
  * @author Nousin
  * @since 2019/12/24
@@ -44,16 +44,8 @@ import java.util.List;
 @Slf4j
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-
     @Autowired
     PermissionMapper permissionMapper;
-//    @Autowired
-//    TokenAuthenticationFilter tokenAuthenticationFilter;
-//    @Autowired
-//    MyFilterInvocationSecurityMetadataSource myFilterInvocationSecurityMetadataSource;
-//    @Autowired
-//    MyAccessDecisionManager myAccessDecisionManager;
-
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -68,8 +60,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     out.flush();
                     out.close();
                 })
-//                .and()
-//                .exceptionHandling()
                 .authenticationEntryPoint((request, response, e) -> {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     response.setContentType("application/json;charset=UTF-8");

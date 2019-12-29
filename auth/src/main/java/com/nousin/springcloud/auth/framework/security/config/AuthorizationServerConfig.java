@@ -56,8 +56,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private AuthenticationManager authenticationManager;
     @Autowired@Qualifier("userDetailService")
     private UserDetailsServiceImpl userDetailService;
-//    private PasswordEncoder passwordEncoder;
-//    private DataSource dataSource;
 
     /**
      * 构造器注入属性
@@ -124,7 +122,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      *
      * @return
      */
-
 //    @Bean
 //    public InMemoryTokenStore tokenStore(){
 //        return new InMemoryTokenStore();

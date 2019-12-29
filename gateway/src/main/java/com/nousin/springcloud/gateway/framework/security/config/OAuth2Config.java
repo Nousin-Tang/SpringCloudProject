@@ -78,32 +78,11 @@ public class OAuth2Config {
 
     @Bean("oauthAuthenticationWebFilter")
     public AuthenticationWebFilter oauthAuthenticationWebFilter() {
-
         AuthenticationWebFilter filter = new AuthenticationWebFilter(reactiveAuthenticationManager());
         filter.setServerAuthenticationConverter(oAuthTokenConverter()::apply);
-        filter.setAuthenticationSuccessHandler((exchange, authentication)->{
-            ServerWebExchange serverWebExchange = exchange.getExchange();
-
-            String path = serverWebExchange.getRequest().getURI().getPath();
-
-            // 获取访问该路由需要的权限
-            // TODO
-
-
-            // 用户所具有的的权限集合
-            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-            for (GrantedAuthority authority : authorities) {
-                System.out.println(authority.getAuthority());
-            }
-
-            // 构造新的请求
-//            ServerHttpRequest request = serverWebExchange.getRequest();
-            // 向请求头中添加用户信息
-//            ServerHttpRequest serverHttpRequest = request.mutate().header("extractTokenInfo", authentication.toString()).build();
-//            ServerWebExchange build = serverWebExchange.mutate().request(serverHttpRequest).build();
-            return exchange.getChain().filter(serverWebExchange);
-
-        });
+        // 服务Token认证 成功
+        filter.setAuthenticationSuccessHandler((exchange, authentication)-> exchange.getChain().filter(exchange.getExchange()));
+        // Token 认证失败
         filter.setAuthenticationFailureHandler((webFilterExchange, authenticationException)->{
             ServerHttpResponse response = webFilterExchange.getExchange().getResponse();
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -116,8 +95,7 @@ public class OAuth2Config {
 
     @Bean
     public ReactiveAuthenticationManager reactiveAuthenticationManager(){
-        return (authentication)->
-            Mono.just(authentication).publishOn(Schedulers.elastic()).flatMap(t -> {
+        return (authentication)-> Mono.just(authentication).publishOn(Schedulers.elastic()).flatMap(t -> {
                 try {
                     return Mono.just(oauthManager().authenticate(t));
                 } catch (Exception x) {

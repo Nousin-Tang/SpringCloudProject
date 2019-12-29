@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * TODO
+ * 获取权限接口
  *
  * @author Nousin
  * @since 2019/12/24

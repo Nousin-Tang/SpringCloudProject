@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * TODO
+ * 权限实体类
  *
  * @author Nousin
  * @since 2019/12/24
