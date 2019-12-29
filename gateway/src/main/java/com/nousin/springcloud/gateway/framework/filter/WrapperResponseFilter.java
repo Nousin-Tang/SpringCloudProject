@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import sun.jvm.hotspot.runtime.Bytes;
 
 import java.nio.charset.StandardCharsets;
 
@@ -46,7 +47,16 @@ public class WrapperResponseFilter implements GlobalFilter {
                         // 释放掉内存
                         DataBufferUtils.release(dataBuffer);
                         String rs = new String(content, StandardCharsets.UTF_8);
-                        byte[] newRs = JSON.toJSONString(ResultUtil.success(rs)).getBytes(StandardCharsets.UTF_8);
+
+                        // 尝试转换rs
+                        byte[] newRs = null;
+                        try{
+                            ResultDto resultDto = JSON.parseObject(rs, ResultDto.class);
+                            newRs = JSON.toJSONString(resultDto).getBytes(StandardCharsets.UTF_8);
+                        } catch (Exception e){
+                            newRs = JSON.toJSONString(ResultUtil.error(rs)).getBytes(StandardCharsets.UTF_8);
+                        }
+
                         originalResponse.getHeaders().setContentLength(newRs.length);//如果不重新设置长度则收不到消息。
                         return bufferFactory.wrap(newRs);
                     }));

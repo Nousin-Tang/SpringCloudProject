@@ -75,11 +75,7 @@
 			<version>2.1.1</version>
 		</dependency>
 
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt</artifactId>
-			<version>0.9.1</version>
-		</dependency>
+
 
 		<!-- Common依赖 -->
 		<dependency>

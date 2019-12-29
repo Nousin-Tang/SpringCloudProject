@@ -3,6 +3,7 @@ package com.nousin.springcloud.gateway.framework.filter;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
+import com.nousin.springcloud.common.util.JwtTokenUtil;
 import com.nousin.springcloud.common.util.ResultUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -99,7 +100,7 @@ public class JwtTokenFilter implements GlobalFilter {
 					token = token.substring(fixStart.length());
 				}
 				//解密token
-				String extractToken = extractToken(token);
+				String extractToken = JwtTokenUtil.extractTokenWithSignKey(token, jwtSignKey);
 				// 构造新的请求
 				ServerHttpRequest serverHttpRequest = request.mutate().header("extractTokenInfo", extractToken).build();
 				return chain.filter(exchange.mutate().request(serverHttpRequest).build());
@@ -122,7 +123,7 @@ public class JwtTokenFilter implements GlobalFilter {
 	private Mono<Void> returnAuthFail(ServerWebExchange exchange, String message) {
 		ServerHttpResponse serverHttpResponse = exchange.getResponse();
 		serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
-		DataBuffer buffer = serverHttpResponse.bufferFactory().wrap(JSON.toJSONBytes(ResultUtil.error(message)));
+		DataBuffer buffer = serverHttpResponse.bufferFactory().wrap(message.getBytes());
 		return serverHttpResponse.writeWith(Flux.just(buffer));
 	}
 

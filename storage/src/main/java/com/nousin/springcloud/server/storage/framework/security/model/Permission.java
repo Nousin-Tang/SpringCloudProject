@@ -2,6 +2,7 @@ package com.nousin.springcloud.server.storage.framework.security.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * TODO
@@ -11,8 +12,13 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class Permission {
+public class Permission implements GrantedAuthority {
     private String id;
     private String url;
     private String permission;
+
+    @Override
+    public String getAuthority() {
+        return permission;
+    }
 }

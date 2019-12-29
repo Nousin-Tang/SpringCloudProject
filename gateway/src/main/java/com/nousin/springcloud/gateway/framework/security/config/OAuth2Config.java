@@ -97,16 +97,17 @@ public class OAuth2Config {
             }
 
             // 构造新的请求
-            ServerHttpRequest request = serverWebExchange.getRequest();
+//            ServerHttpRequest request = serverWebExchange.getRequest();
             // 向请求头中添加用户信息
-            ServerHttpRequest serverHttpRequest = request.mutate().header("extractTokenInfo", authentication.toString()).build();
-            return exchange.getChain().filter(serverWebExchange.mutate().request(serverHttpRequest).build());
+//            ServerHttpRequest serverHttpRequest = request.mutate().header("extractTokenInfo", authentication.toString()).build();
+//            ServerWebExchange build = serverWebExchange.mutate().request(serverHttpRequest).build();
+            return exchange.getChain().filter(serverWebExchange);
 
         });
         filter.setAuthenticationFailureHandler((webFilterExchange, authenticationException)->{
             ServerHttpResponse response = webFilterExchange.getExchange().getResponse();
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
-            String body = JSONObject.toJSONString(ResultUtil.success(authenticationException.getMessage()));
+            String body = JSONObject.toJSONString(ResultUtil.fail(authenticationException.getMessage()));
             DataBuffer buffer = response.bufferFactory().wrap(body.getBytes(StandardCharsets.UTF_8));
             return response.writeWith(Mono.just(buffer));
         });

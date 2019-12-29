@@ -28,4 +28,4 @@ spring:
     password: 123456
 
 mybatis:
-  mapper-locations: classpath:/mapper/**
+  mapper-locations: /mapper/*.xml

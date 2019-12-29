@@ -4,6 +4,7 @@ import com.nousin.springcloud.common.dto.ResultDto;
 import com.nousin.springcloud.common.util.ResultUtil;
 import com.nousin.springcloud.server.storage.framework.security.dao.PermissionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,7 +33,7 @@ public class PermissionController {
     public ResultDto get(@RequestParam(required = false) String param){
         return ResultUtil.success(permissionMapper.findAllPermissions());
     }
-    @RequestMapping(value="/sys/dict/", method = RequestMethod.GET)
+    @RequestMapping(value="/sys/dict", method = RequestMethod.GET)
     public ResultDto getPer(@RequestParam(required = false) String param){
         return ResultUtil.success(permissionMapper.findAllPermissions());
     }
