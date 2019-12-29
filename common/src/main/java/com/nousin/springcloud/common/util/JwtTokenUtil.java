@@ -22,6 +22,7 @@ public class JwtTokenUtil {
 
     /**
      * 获取token
+     *
      * @param object
      * @param signKey
      * @param date
@@ -41,18 +42,9 @@ public class JwtTokenUtil {
      * @return
      */
     public static String extractTokenWithSignKey(String token, String jwtSignKey) {
-        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(jwtSignKey.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token);
-        Date expiration = claimsJws.getBody().getExpiration();
-        if (expiration != null && DateUtil.toLocalDateTime(expiration).isBefore(DateUtil.now())) {
-            throw new ExpiredJwtException(claimsJws.getHeader(), claimsJws.getBody(), "Token is expired");
-        }
-        String jsonString = JSON.toJSONString(claimsJws.getBody());
-        Object eval = JSONPath.eval(jsonString, "$.extra");
-        if (eval == null || StringUtils.isBlank(eval.toString())) {
-            throw new RuntimeException();
-        }
-        return eval.toString();
+        return extractTokenWithSignKey(token, jwtSignKey, "extra");
     }
+
     public static String extractTokenWithSignKey(String token, String jwtSignKey, String jsonProperties) {
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(jwtSignKey.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token);
         Date expiration = claimsJws.getBody().getExpiration();
@@ -60,8 +52,8 @@ public class JwtTokenUtil {
             throw new ExpiredJwtException(claimsJws.getHeader(), claimsJws.getBody(), "Token is expired");
         }
         String jsonString = JSON.toJSONString(claimsJws.getBody());
-        if(StringUtils.isNotBlank(jsonProperties)){
-            Object eval = JSONPath.eval(jsonString, "$.extra");
+        if (StringUtils.isNotBlank(jsonProperties)) {
+            Object eval = JSONPath.eval(jsonString, "$." + jsonProperties);
             if (eval == null || StringUtils.isBlank(eval.toString())) {
 //                throw new RuntimeException();
                 return null;

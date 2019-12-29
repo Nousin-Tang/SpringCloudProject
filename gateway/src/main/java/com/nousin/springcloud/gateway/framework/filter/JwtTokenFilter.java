@@ -126,30 +126,4 @@ public class JwtTokenFilter implements GlobalFilter {
 		DataBuffer buffer = serverHttpResponse.bufferFactory().wrap(message.getBytes());
 		return serverHttpResponse.writeWith(Flux.just(buffer));
 	}
-
-	/**
-	 * 获取token信息
-	 *
-	 * @param token
-	 * @return
-	 */
-	private String extractToken(String token) {
-		Jwt decode = JwtHelper.decode(token);
-		JSONObject jsonObject = JSON.parseObject(decode.getClaims());
-		Object eval = JSONPath.eval(jsonObject, "$.extra");
-		if (eval == null || StringUtils.isBlank(eval.toString())) {
-			throw new RuntimeException();
-		}
-		return eval.toString();
-	}
-	private String extractTokenWithSignKey(String token) {
-		Jws<Claims> claimsJws = Jwts.parser().setSigningKey(jwtSignKey.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token);
-		Date expiration = claimsJws.getBody().getExpiration();
-		JSONObject jsonObject = JSON.parseObject(claimsJws.getBody().toString());
-		Object eval = JSONPath.eval(jsonObject, "$.extra");
-		if (eval == null || StringUtils.isBlank(eval.toString())) {
-			throw new RuntimeException();
-		}
-		return claimsJws.toString();
-	}
 }

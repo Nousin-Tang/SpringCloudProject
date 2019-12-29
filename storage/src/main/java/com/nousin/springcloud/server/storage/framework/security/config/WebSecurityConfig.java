@@ -10,6 +10,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +44,9 @@ import java.util.List;
 @Order(SecurityProperties.DEFAULT_FILTER_ORDER - 1)
 @Slf4j
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Value("${nousin.jwt.sign-key:123456}")
+    private String jwtSignKey; // jwt签名 与Auth-server 系统签名一样
 
     @Autowired
     PermissionMapper permissionMapper;
@@ -99,7 +103,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         token = token.substring(fixStart.length());
                     }
                     //解密token
-                    String extractToken = JwtTokenUtil.extractTokenWithSignKey(token, "");
+                    String extractToken = JwtTokenUtil.extractTokenWithSignKey(token, jwtSignKey);
                     return getAuth(extractToken);
                 } catch (ExpiredJwtException e) {
                     log.error("e", e);
