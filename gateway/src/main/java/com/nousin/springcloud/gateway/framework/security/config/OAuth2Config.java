@@ -49,7 +49,7 @@ import java.util.function.Function;
 @EnableWebFluxSecurity
 public class OAuth2Config {
     // jwt签名与Auth-server系统签名一样
-    @Value("${nousin.jwt.sign-key:123456}")
+    @Value("${nousin.jwt.signKey:123456}")
     private String jwtSignKey;
 
     @Bean

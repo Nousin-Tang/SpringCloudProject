@@ -21,6 +21,9 @@ public class ResultUtil {
 	// ----------------------- 失败 -----------------------
 
 	// --------- 系统错误 ---------
+	public static ResultDto error() {
+		return new ResultDto("9999", "系统错误", null);
+	}
 	public static ResultDto error(Object data) {
 		return new ResultDto("9999", "系统错误", data);
 	}
@@ -34,6 +37,9 @@ public class ResultUtil {
 	// --------- 权限认证或校验错误 ---------
 	public static ResultDto authError() {
 		return new ResultDto("99", "认证系统繁忙", null);
+	}
+	public static ResultDto authAccessDenied() {
+		return new ResultDto("99", "访问被拒绝", null);
 	}
 	public static ResultDto authFailed(String code, String message) {
 		return new ResultDto(code, message, null);

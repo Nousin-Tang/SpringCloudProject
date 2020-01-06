@@ -4,9 +4,9 @@ server:
 
 nousin:
   base:
-    request-path: /gateway
+    requestUrl: /gateway
   jwt:
-    sign-key: 123456
+    signKey: 123456
 
   server:
     order: order-service

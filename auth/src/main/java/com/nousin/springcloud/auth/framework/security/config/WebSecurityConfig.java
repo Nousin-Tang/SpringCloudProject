@@ -30,8 +30,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Order(2)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("${nousin.base.request-path}")
+    @Value("${nousin.base.requestUrl}")
     private String requestPath;
+
     private UserDetailsServiceImpl userService;
 
     /**

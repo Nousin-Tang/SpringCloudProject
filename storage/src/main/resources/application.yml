@@ -2,18 +2,20 @@
 server:
   port: 9102
 
-nousin:
-  base:
-    request-path: /storage
-  jwt:
-    sign-key: 123456
-
 
 # Spring
 spring:
   # 应用名称
   application:
     name: storage-service
+  # 时间格式化与时区设置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: UTC
+  # 国际化
+  messages:
+    encoding: UTF-8
+    basename: i18n/messages
   # Spring Cloud 配置
   cloud:
     # Nacos
@@ -22,10 +24,67 @@ spring:
         server-addr: 127.0.0.1:8848
   # 数据库配置
   datasource:
+    type: com.alibaba.druid.pool.xa.DruidXADataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/cloud_storage?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8
-    username: root
-    password: 123456
+    initialSize: 1
+    minIdle: 3
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 'x' FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    filters: stat
+    storage:
+      url: jdbc:mysql://localhost:3306/cloud_storage?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=UTC
+      username: root
+      password: 123456
+    base:
+      url: jdbc:mysql://localhost:3306/cloud_base?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=UTC
+      username: root
+      password: 123456
 
+  # Redis 配置
+  redis:
+    #redis数据库索引(默认为0)
+    database: 6
+    #redis服务器地址
+    host: localhost
+    #redis服务器连接端口
+    port: 6379
+    #redis服务器连接密码(默认无密码)
+    password:
+    #连接超时时间(毫秒)
+    timeout: 1000
+
+# Mybatis
 mybatis:
-  mapper-locations: /mapper/*.xml
+  mapper-locations: classpath:mapper/**/*.xml
+
+# atomikos
+com.atomikos.icatch:
+  service: com.atomikos.icatch.standalone.UserTransactionServiceFactory
+  max_timeout: 600000
+  default_jta_timeout: 600000
+  log_base_dir:  ${user.dir}/logs/storage/jta-transaction-logs
+  log_base_name: springboot-mybatis-log
+  serial_jta_transactions: false
+
+nousin:
+  base:
+    requestUrl: /storage
+  userfiles:
+    basedir: ${user.dir}
+    basedirTemp: ${user.dir}/temp
+  jwt:
+    signKey: 123456
+  # 是否开启 Swagger
+  swagger.enable: true
+  # 是否进行权限校验
+  security.enable: true
+  # 时区
+  timezone: ${spring.jackson.time-zone} # 时区
+  # 语言
+  language: en_US

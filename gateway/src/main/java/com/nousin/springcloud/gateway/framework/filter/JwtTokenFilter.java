@@ -42,7 +42,7 @@ import java.util.Date;
 @Slf4j
 public class JwtTokenFilter implements GlobalFilter {
 	// 存在则使用配置的key，不存在则使用随机的一个UUID
-	@Value("${nousin.jwt.sign-key:123456}")
+	@Value("${nousin.jwt.signKey:123456}")
 	private String jwtSignKey; // jwt签名 与Auth-server 系统签名一样
 
 	/**

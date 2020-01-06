@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 @Order(3)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
-    @Value("${nousin.base.request-path}")
+    @Value("${nousin.base.requestUrl}")
     private String requestPath;
 
     @Override

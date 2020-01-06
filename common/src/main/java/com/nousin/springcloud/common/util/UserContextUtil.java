@@ -5,11 +5,12 @@ import com.nousin.springcloud.common.dto.OauthUserInfoDto;
 import java.util.Optional;
 
 /**
- * 用户上下文工具类
+ * 用户上下文工具类 （需要主动释放资源）
  *
  * @author Nousin
  * @since 2019/12/16
  */
+@Deprecated
 public class UserContextUtil {
 	private ThreadLocal<OauthUserInfoDto> threadLocal;
 

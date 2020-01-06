@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
  * @since 2019/12/12
  */
 @RestController
-@RequestMapping("${nousin.base.request-path}")
+@RequestMapping("${nousin.base.requestUrl}")
 public class AuthController {
     /**
      * TODO

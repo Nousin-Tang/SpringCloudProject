@@ -17,9 +17,9 @@ spring:
 
 nousin:
   base:
-    request-path: /auth
+    requestUrl: /auth
   jwt:
-    sign-key: 123456
+    signKey: 123456
     validity-seconds: 7200
 
   oauth2-client:

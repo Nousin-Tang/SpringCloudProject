@@ -5,11 +5,9 @@ server:
 
 nousin:
   base:
-    request-path: /order
-  hello.word: nihao
-  security:
-    oauth2:
-      jwt-sign-key: 123456
+    requestUrl: /order
+  jwt:
+    signKey: 123456
   feign:
     server:
       account: account-server

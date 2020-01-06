@@ -37,7 +37,7 @@ import java.util.Map;
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
     // 签名
-    @Value("${nousin.jwt.sign-key:123456}")
+    @Value("${nousin.jwt.signKey:123456}")
     private String signKey;
 
     // 失效时间

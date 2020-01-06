@@ -15,7 +15,7 @@ import java.util.Map;
  * @since 2019/12/8
  */
 @RestController
-@RequestMapping("${nousin.base.request-path}")
+@RequestMapping("${nousin.base.requestUrl}")
 //@RefreshScope // 配置文件中配置了 management.endpoints.web.exposure.include=refresh 时，
 // 执行 curl -X POST http://localhost:8001/bus/refresh 请求时就会刷新 ${hello.word} 的值
 public class OrderController {
