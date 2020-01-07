@@ -2,6 +2,7 @@ package com.nousin.springcloud.server.storage.framework.common.util;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 /**
  * Spring上下文信息
@@ -9,6 +10,7 @@ import org.springframework.context.ApplicationContextAware;
  * @author Nousin
  * @since 2019/12/16
  */
+@Component
 public class SpringContextUtil implements ApplicationContextAware {
     /**
      * 静态变量ApplicationContext

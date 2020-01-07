@@ -4,7 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.nousin.springcloud.common.dto.OauthUserInfoDto;
 import com.nousin.springcloud.common.util.JwtTokenUtil;
-import com.nousin.springcloud.server.storage.framework.common.util.UserContextUtil;
+import com.nousin.springcloud.common.util.UserContextUtil;
+import com.nousin.springcloud.server.storage.framework.common.util.SecurityContextUtil;
 import com.nousin.springcloud.server.storage.framework.security.dao.PermissionMapper;
 import com.nousin.springcloud.server.storage.framework.security.model.Permission;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -29,7 +29,6 @@ import org.springframework.security.web.header.Header;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.LocaleResolver;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -69,11 +68,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private MyAuthenticationEntryPoint authenticationEntryPoint;
+
 	@Autowired
 	private MyAccessDeniedHandler accessDeniedHandler;
-
-//	@Autowired
-//	LocaleResolver localeResolver;
 
 	private static String[] ignoreUrls = {};
 	private static String[] ignoreSwaggerUrls = { "/swagger-ui.html", "/swagger-resources/**", "/images/**",
@@ -104,11 +101,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public OncePerRequestFilter getOncePerRequestFilter() {
-		List<String> delimiters = Arrays.asList("-", "_");
+		List<String> delimiters = Arrays.asList("_", "-");
 		return new OncePerRequestFilter() {
 
 			@Override
 			public boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+
 				// 设置语言环境
 				setLocale(request.getHeader("lang"));
 
@@ -150,59 +148,75 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				for (String delimiter : delimiters) {
 					if(lang.indexOf(delimiter)>0){
 						String[] split = lang.split(delimiter);
-						LocaleContextHolder.setLocale(new Locale(split[0],split[1]));
-						// 在  com.nousin.springcloud.server.storage.framework.config.WebMvcConfig.localeResolver 中起作用
-						Locale.setDefault(new Locale(split[0],split[1]));
-						break;
+						UserContextUtil.setLocale(new Locale(split[0], split[1]));
+						return;
 					}
 				}
+				UserContextUtil.setLocale(new Locale(lang, ""));
 			}
 
+			/**
+			 * 进行过滤
+			 * 注：SpringContextHolder 的内容在请求结束时 会在 FilterChainProxy#doFilter 方法中被清除
+			 *
+			 * @param request
+			 * @param response
+			 * @param chain
+			 * @see org.springframework.security.web.FilterChainProxy#doFilter
+			 * @throws IOException
+			 * @throws ServletException
+			 */
 			@Override
 			protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 					throws IOException, ServletException {
-				String userInfo = request.getHeader("extractTokenInfo");
 
-				// 如果用户信息不为空则信任该请求
-				if (StringUtils.isNotBlank(userInfo)) {
-					SecurityContextHolder.getContext().setAuthentication(getAuth(userInfo));
-					chain.doFilter(request, response);
-					return;
-				}
-
-				if (!securityEnable) {
-					SecurityContextHolder.getContext().setAuthentication(getAuth(JSON.toJSONString(UserContextUtil.getUser())));
-					chain.doFilter(request, response);
-					return;
-				}
-
-				String token = request.getHeader("Authorization");
-				if (StringUtils.isBlank(token)) {
-					authenticationEntryPoint.commence(request, response,
-							new AuthenticationServiceException("Token is missing."));
-					return;
-				}
-				//有token
 				try {
-					String fixStart = "bearer ";
-					if (token.toLowerCase().startsWith(fixStart)) {
-						token = token.substring(fixStart.length());
+					String userInfo = request.getHeader("extractTokenInfo");
+
+					// 如果用户信息不为空则信任该请求
+					if (StringUtils.isNotBlank(userInfo)) {
+						SecurityContextHolder.getContext().setAuthentication(getAuth(userInfo));
+						chain.doFilter(request, response);
+						return;
 					}
-					//解密token
-					String extractToken = JwtTokenUtil.extractTokenWithSignKey(token, jwtSignKey);
-					SecurityContextHolder.getContext().setAuthentication(getAuth(extractToken));
-				} catch (ExpiredJwtException e) {
-					SecurityContextHolder.clearContext();
-					authenticationEntryPoint.commence(request, response,
-							new CredentialsExpiredException("The token is time out."));
-					return;
-				} catch (Exception e) {
-					SecurityContextHolder.clearContext();
-					authenticationEntryPoint.commence(request, response,
-							new AuthenticationServiceException("Authentication failed."));
-					return;
+
+					if (!securityEnable) {
+						SecurityContextHolder.getContext().setAuthentication(getAuth(JSON.toJSONString(SecurityContextUtil.getUser())));
+						chain.doFilter(request, response);
+						return;
+					}
+
+					String token = request.getHeader("Authorization");
+					if (StringUtils.isBlank(token)) {
+						authenticationEntryPoint.commence(request, response,
+								new AuthenticationServiceException("Token is missing."));
+						return;
+					}
+					//有token
+					try {
+						String fixStart = "bearer ";
+						if (token.toLowerCase().startsWith(fixStart)) {
+							token = token.substring(fixStart.length());
+						}
+						//解密token
+						String extractToken = JwtTokenUtil.extractTokenWithSignKey(token, jwtSignKey);
+						SecurityContextHolder.getContext().setAuthentication(getAuth(extractToken));
+					} catch (ExpiredJwtException e) {
+						SecurityContextHolder.clearContext();
+						authenticationEntryPoint.commence(request, response,
+								new CredentialsExpiredException("The token is time out."));
+						return;
+					} catch (Exception e) {
+						SecurityContextHolder.clearContext();
+						authenticationEntryPoint.commence(request, response,
+								new AuthenticationServiceException("Authentication failed."));
+						return;
+					}
+					chain.doFilter(request, response);
+				}finally {
+					// 清除用户线程中的上下文信息
+					UserContextUtil.clear();
 				}
-				chain.doFilter(request, response);
 			}
 
 			private UsernamePasswordAuthenticationToken getAuth(String tokenInfo) {
@@ -218,6 +232,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				if (userPermissions.size() == 0) {
 					throw new RuntimeException("No permission data");
 				}
+
+				UserContextUtil.setUserContext(userInfoDto);
 				return new UsernamePasswordAuthenticationToken(userInfoDto, null, userPermissions);
 			}
 

@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * @author Nousin
  * @since 2020/1/6
  */
-public class UserContextUtil {
+public class SecurityContextUtil {
 
 	/**
 	 * 获取用户信息
@@ -27,7 +27,7 @@ public class UserContextUtil {
 			defaultUserInfo.setId("1");
 			defaultUserInfo.setPartnerCode("KD");
 			defaultUserInfo.setPlatform("partner");
-			defaultUserInfo.setLanguage("zh-en");
+			defaultUserInfo.setLanguage("en_US");
 			return defaultUserInfo;
 		}
 		return DozerUtil.map(authentication.getPrincipal(), OauthUserInfoDto.class);

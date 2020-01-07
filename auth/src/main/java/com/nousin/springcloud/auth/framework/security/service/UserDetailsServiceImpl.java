@@ -27,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		userInfo.setUsername(username);
 		userInfo.setPassword(PasswordUtil.encode("123456"));
 		userInfo.setName(username);
-		userInfo.setLanguage("zh-en");
+		userInfo.setLanguage("en_US");
 		userInfo.setPlatform("partner");
 		if (StringUtils.endsWithIgnoreCase("partner", "partner")) {
 			userInfo.setPartnerCode("KD");

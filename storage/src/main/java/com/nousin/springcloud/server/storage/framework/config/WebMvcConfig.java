@@ -2,34 +2,26 @@ package com.nousin.springcloud.server.storage.framework.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.HibernateValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import javax.servlet.MultipartConfigElement;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.io.File;
 
 /**
  * WebMvcConfig 配置类
@@ -151,20 +143,4 @@ public class WebMvcConfig implements WebMvcConfigurer {
         return methodValidationPostProcessor;
     }
 
-    @Bean
-    public LocaleResolver localeResolver(){
-        List<String> delimiters = Arrays.asList("-", "_");
-        return new LocaleResolver(){
-            @Override
-            public Locale resolveLocale(HttpServletRequest request) {
-//                Locale locale = LocaleContextHolder.getLocale();
-                return Locale.getDefault();
-            }
-
-            @Override
-            public void setLocale(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Locale locale) {
-
-            }
-        };
-    }
 }
