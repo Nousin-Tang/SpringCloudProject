@@ -6,21 +6,33 @@ spring:
   # 应用名称
   application:
     name: auth-service
+
+  # 时间格式化与时区设置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: UTC
+  # Nacos
   cloud.nacos.discovery.server-addr: 127.0.0.1:8848 # Nacos
   # 数据源
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/order?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2B8
+    url: jdbc:mysql://localhost:3306/order?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=UTC
     username: root
     password: 123456
 
 
 nousin:
+  # 时区
+  timezone: ${spring.jackson.time-zone} # 时区
+  # 语言
+  language: en_US
+  # Security 验证附加信息
+  principleInfo: principleInfo
   base:
     requestUrl: /auth
   jwt:
     signKey: 123456
-    validity-seconds: 7200
+    validity-seconds: 72000000 # 秒
 
   oauth2-client:
       clientId: client

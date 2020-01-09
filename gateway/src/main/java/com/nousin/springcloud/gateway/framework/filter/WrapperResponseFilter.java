@@ -3,6 +3,7 @@ package com.nousin.springcloud.gateway.framework.filter;
 import com.alibaba.fastjson.JSON;
 import com.nousin.springcloud.common.dto.ResultDto;
 import com.nousin.springcloud.common.util.ResultUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -10,6 +11,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.stereotype.Component;
@@ -22,20 +24,32 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * 返回数据的包装类
+ * TODO 下载文件时的解决方法
  *
  * @author Nousin
  * @since 2019/12/9
  */
 @Component
-@Order(-230) // 需要注意的是order需要小于-1，需要先于NettyWriteResponseFilter过滤器执行。
+@Order(-200) // 需要注意的是order需要小于-1，需要先于NettyWriteResponseFilter过滤器执行。
+@Slf4j
 public class WrapperResponseFilter implements GlobalFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        ServerHttpResponse originalResponse = exchange.getResponse();
-        DataBufferFactory bufferFactory = originalResponse.bufferFactory();
-        ServerHttpResponseDecorator decoratedResponse = new ServerHttpResponseDecorator(originalResponse) {
+        // replace response with decorator
+        return chain.filter(exchange.mutate().response(getResponseDecorator(exchange.getResponse())).build());
+    }
+
+    /**
+     * 获取Response装饰器
+     * @param originalResponse 原Response
+     * @return 装饰过的Response
+     */
+    public ServerHttpResponseDecorator getResponseDecorator(ServerHttpResponse originalResponse){
+        return new ServerHttpResponseDecorator(originalResponse) {
             @Override
             public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
+                final MediaType contentType = super.getHeaders().getContentType();
+                log.info("ContentType:{}", contentType.getType());
                 if(body instanceof ResultDto){
                     return super.writeWith(body);
                 } else if (body instanceof Flux) {
@@ -56,16 +70,13 @@ public class WrapperResponseFilter implements GlobalFilter {
                         } catch (Exception e){
                             newRs = JSON.toJSONString(ResultUtil.error(rs)).getBytes(StandardCharsets.UTF_8);
                         }
-
                         originalResponse.getHeaders().setContentLength(newRs.length);//如果不重新设置长度则收不到消息。
-                        return bufferFactory.wrap(newRs);
+                        return originalResponse.bufferFactory().wrap(newRs);
                     }));
                 }
                 // if body is not a flux. never got there.
                 return super.writeWith(body);
             }
         };
-        // replace response with decorator
-        return chain.filter(exchange.mutate().response(decoratedResponse).build());
     }
 }

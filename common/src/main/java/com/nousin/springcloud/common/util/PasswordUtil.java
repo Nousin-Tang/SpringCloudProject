@@ -2,7 +2,6 @@ package com.nousin.springcloud.common.util;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.security.GeneralSecurityException;
@@ -20,6 +19,11 @@ public class PasswordUtil {
     public static final int HASH_ITERATIONS = 1024;
     public static final int SALT_SIZE = 8;
 
+    /**
+     * 密码加密
+     * @param rawPassword 明文
+     * @return 加密后密码
+     */
     public static String encode(CharSequence rawPassword) {
         String plain = StringEscapeUtils.unescapeHtml4(rawPassword.toString());
         byte[] salt = generateSalt();
@@ -27,9 +31,13 @@ public class PasswordUtil {
         return new String(Hex.encodeHex(salt)) + new String(Hex.encodeHex(hashPassword));
     }
 
+    /**
+     * 密码匹配
+     * @param rawPassword 明文
+     * @param encodedPassword 加密密码
+     * @return 匹配结果
+     */
     public static boolean matches(CharSequence rawPassword, String encodedPassword) {
-        if (StringUtils.equals(rawPassword, encodedPassword))
-            return true;
         try {
             String plain = StringEscapeUtils.unescapeHtml4(rawPassword.toString());
             byte[] salt = Hex.decodeHex(encodedPassword.substring(0, 16).toCharArray());

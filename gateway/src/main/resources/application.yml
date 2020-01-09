@@ -2,19 +2,6 @@ server:
   port: 9000
 
 
-nousin:
-  base:
-    requestUrl: /gateway
-  jwt:
-    signKey: 123456
-
-  server:
-    order: order-service
-    storage: storage-service
-    account: acount-service
-    auth: auth-service
-
-
 # Spring
 spring:
   # 应用名称
@@ -80,3 +67,16 @@ security:
 logging:
   level:
     org.springframework.cloud.gateway: info
+
+
+nousin:
+  # Security 验证附加信息
+  principleInfo: principleInfo
+  # Jwt签名
+  jwt.signKey: 123456
+  # 服务名称
+  server:
+    order: order-service
+    storage: storage-service
+    account: acount-service
+    auth: auth-service

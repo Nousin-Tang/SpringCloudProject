@@ -4,6 +4,7 @@ import com.nousin.springcloud.common.util.UserContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 
 import java.util.Locale;
 
@@ -62,8 +63,16 @@ public class I18nUtil {
             return StringUtils.EMPTY;
         }
         if (null == locale) {
-            locale = Locale.ENGLISH;
+            locale = Locale.getDefault();
         }
-        return messageSource.getMessage(key, objects, locale);
+        try{
+            return messageSource.getMessage(key, objects, locale);
+        }catch (NoSuchMessageException e){
+            try{
+                return messageSource.getMessage(key, objects, Locale.getDefault());
+            }catch (NoSuchMessageException ex){
+                return "";
+            }
+        }
     }
 }

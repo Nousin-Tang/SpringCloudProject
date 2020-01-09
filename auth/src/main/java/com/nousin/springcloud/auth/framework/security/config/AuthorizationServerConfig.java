@@ -4,6 +4,7 @@ import com.nousin.springcloud.auth.framework.security.entity.UserDetail;
 import com.nousin.springcloud.auth.framework.security.service.UserDetailsServiceImpl;
 import com.nousin.springcloud.common.dto.OauthUserInfoDto;
 import com.nousin.springcloud.common.util.DozerUtil;
+import com.nousin.springcloud.common.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,9 +53,13 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private String grantType;
     @Value("${nousin.oauth2-client.scope:all}")
     private String scope;
+    @Value("${nousin.principleInfo:principleInfo}")
+    private String principleInfo;
 
     private AuthenticationManager authenticationManager;
-    @Autowired@Qualifier("userDetailService")
+
+    @Autowired
+    @Qualifier("userDetailService")
     private UserDetailsServiceImpl userDetailService;
 
     /**
@@ -111,7 +116,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient(clientId)
-                .secret(clientSecret)
+                .secret(PasswordUtil.encode(clientSecret))
                 .authorizedGrantTypes(grantType.split(","))
                 .scopes(scope)
                 .accessTokenValiditySeconds(jwtValiditySeconds);
@@ -151,7 +156,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
             UserDetail userDetail = (UserDetail) authentication.getPrincipal();
             OauthUserInfoDto userDto = DozerUtil.map(userDetail, OauthUserInfoDto.class);
             Map<String, Object> additionalInfo = new HashMap<>();
-            additionalInfo.put("extra", userDto);
+            additionalInfo.put(principleInfo, userDto);
             ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
             return accessToken;
         };

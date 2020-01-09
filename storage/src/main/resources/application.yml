@@ -2,7 +2,6 @@
 server:
   port: 9102
 
-
 # Spring
 spring:
   # 应用名称
@@ -73,13 +72,6 @@ com.atomikos.icatch:
   serial_jta_transactions: false
 
 nousin:
-  base:
-    requestUrl: /storage
-  userfiles:
-    basedir: ${user.dir}
-    basedirTemp: ${user.dir}/temp
-  jwt:
-    signKey: 123456
   # 是否开启 Swagger
   swagger.enable: true
   # 是否进行权限校验
@@ -88,3 +80,12 @@ nousin:
   timezone: ${spring.jackson.time-zone} # 时区
   # 语言
   language: en_US
+  # Security 验证附加信息
+  principleInfo: principleInfo
+  base:
+    requestUrl: /storage
+  userfiles:
+    basedir: ${user.dir}
+    basedirTemp: ${user.dir}/temp
+  jwt:
+    signKey: 123456

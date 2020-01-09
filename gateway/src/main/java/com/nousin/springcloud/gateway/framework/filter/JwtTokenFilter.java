@@ -41,9 +41,14 @@ import java.util.Date;
 @Order(-201)
 @Slf4j
 public class JwtTokenFilter implements GlobalFilter {
-	// 存在则使用配置的key，不存在则使用随机的一个UUID
+
+	// jwt签名 与Auth-server 系统签名一样
 	@Value("${nousin.jwt.signKey:123456}")
-	private String jwtSignKey; // jwt签名 与Auth-server 系统签名一样
+	private String jwtSignKey;
+
+	// 验证附加信息名称
+	@Value("${nousin.principleInfo:principleInfo}")
+	private String principleInfo;
 
 	/**
 	 * 授权访问用户名
@@ -67,7 +72,6 @@ public class JwtTokenFilter implements GlobalFilter {
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 		ServerHttpRequest request = exchange.getRequest();
 		String url = request.getURI().getPath();
-		log.info(url);
 		//跳过不需要验证的路径
 		AntPathMatcher authMatcher = new AntPathMatcher();
 		if (authMatcher.match("/oauth/**", url)) {
@@ -81,12 +85,6 @@ public class JwtTokenFilter implements GlobalFilter {
 			return chain.filter(build);
 		}
 		HttpHeaders headers = request.getHeaders();
-
-		String extractTokenInfo = headers.getFirst("extractTokenInfo");
-		if (StringUtils.isNotBlank(extractTokenInfo)) {
-			return chain.filter(exchange);
-		}
-
 		//获取token
 		String token = headers.getFirst("Authorization");
 		if (StringUtils.isBlank(token)) {
@@ -102,7 +100,7 @@ public class JwtTokenFilter implements GlobalFilter {
 				//解密token
 				String extractToken = JwtTokenUtil.extractTokenWithSignKey(token, jwtSignKey);
 				// 构造新的请求
-				ServerHttpRequest serverHttpRequest = request.mutate().header("extractTokenInfo", extractToken).build();
+				ServerHttpRequest serverHttpRequest = request.mutate().header(principleInfo, extractToken).build();
 				return chain.filter(exchange.mutate().request(serverHttpRequest).build());
 			} catch (ExpiredJwtException e) {
 				log.error("e", e);
