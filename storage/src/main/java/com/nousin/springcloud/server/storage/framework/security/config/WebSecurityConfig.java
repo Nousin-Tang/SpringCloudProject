@@ -35,10 +35,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * 服务层 Spring Security 配置
@@ -226,7 +223,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				if (securityEnable) {
 					userPermissions.addAll(permissionMapper.listPermissionsById(userInfoDto.getId()));
 				} else {
-					userPermissions.addAll(permissionMapper.listPermissions());
+					userPermissions.add(new Permission("sys:user"));
 				}
 				// 如果没有权限则 验证失败
 				if (userPermissions.size() == 0) {
