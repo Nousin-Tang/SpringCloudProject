@@ -5,10 +5,12 @@ import com.alibaba.fastjson.JSONPath;
 import io.jsonwebtoken.*;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * JwtToken 工具类
@@ -30,7 +32,14 @@ public class JwtTokenUtil {
     public static String encrypt(Object object, String signKey, Date date) {
         Map<String, Object> claims = new HashMap<>(1);
         claims.put("extra", object);
-        return Jwts.builder().addClaims(claims).setExpiration(date).signWith(SignatureAlgorithm.RS256, signKey).compact();
+        Map<String, Object> headers = new HashMap<>(2);
+        headers.put("alg", "HS256");
+        headers.put("typ", "JWT");
+        byte[] bytes = signKey.getBytes();
+        SecretKeySpec keySpec = new SecretKeySpec(bytes, 0, bytes.length, "AES");
+        return Jwts.builder().setHeader(headers).setIssuer("").setId(UUID.randomUUID().toString())
+                .setIssuedAt(new Date()).setSubject("").setExpiration(date)
+                .addClaims(claims).signWith(SignatureAlgorithm.HS256, keySpec).compact();
     }
 
     /**
